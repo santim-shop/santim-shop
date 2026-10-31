@@ -1,0 +1,17 @@
+{
+  "telegram": "your_telegram_username",
+  "packs": [
+    { "coins": 70,   "price": 150 },
+    { "coins": 350,  "price": 720 },
+    { "coins": 700,  "price": 1400, "tag": "popular" },
+    { "coins": 1400, "price": 2750 },
+    { "coins": 3500, "price": 6800 },
+    { "coins": 7000, "price": 13400, "tag": "best" }
+  ],
+  "payments": [
+    { "id": "telebirr", "name": "Telebirr",    "account": "09XX XXX XXX",  "holder": "Account holder name" },
+    { "id": "cbe",      "name": "CBE Birr",    "account": "1000XXXXXXXXX", "holder": "Account holder name" },
+    { "id": "awash",    "name": "Awash Bank",  "account": "01320XXXXXXXX", "holder": "Account holder name" },
+    { "id": "dashen",   "name": "Dashen Bank", "account": "0XXXXXXXXXXXX", "holder": "Account holder name" }
+  ]
+}

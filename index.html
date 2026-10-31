@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Santim Shop</title>
+<style>html{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky top bar, split hero with live rate card, pack grid feeding one checkout panel, then steps, payments, FAQ.
+   Identity: deep Ethiopian green with a single gold accent for prices and the primary pack. */
+:root {
+  --bg: #F2F5F3;
+  --surface: #FFFFFF;
+  --surface-2: #E8EEEA;
+  --fg: #10201A;
+  --muted: #4A5E55;
+  --line: #D3DDD8;
+  --brand: #0E5A3E;
+  --brand-fg: #FFFFFF;
+  --gold: #FFC93C;
+  --gold-ink: #6B4A00;
+  --ok: #1F8A4C;
+  --bad: #B3261E;
+  --font-display: "Bricolage Grotesque", "Noto Sans Ethiopic", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Noto Sans Ethiopic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1410; --surface: #121F19; --surface-2: #192A22; --fg: #E8F0EC; --muted: #9DB2A8;
+    --line: #25392F; --brand: #35C98A; --brand-fg: #052016; --gold: #FFC93C; --gold-ink: #FFD978;
+    --ok: #4CD08A; --bad: #FF8A80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1410; --surface: #121F19; --surface-2: #192A22; --fg: #E8F0EC; --muted: #9DB2A8;
+  --line: #25392F; --brand: #35C98A; --brand-fg: #052016; --gold: #FFC93C; --gold-ink: #FFD978;
+  --ok: #4CD08A; --bad: #FF8A80; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55;
+  padding-inline: 0;
+}
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+.wrap {
+  max-width: 1120px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.08; letter-spacing: -0.02em; }
+h1 { font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 800; }
+h2 { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; text-decoration: none; }
+.mark { width: 34px; height: 34px; border-radius: 10px; background: var(--brand); display: grid; place-items: center; }
+.mark svg { width: 20px; height: 20px; }
+.nav { display: flex; align-items: center; gap: 18px; }
+.nav a.link { text-decoration: none; font-weight: 500; color: var(--muted); font-size: 0.95rem; }
+.nav a.link:hover { color: var(--fg); }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.lang button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 0.85rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--brand); color: var(--brand-fg); }
+@media (max-width: 640px) { .nav a.link { display: none; } }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; font: inherit; font-weight: 600; padding: 14px 22px; border-radius: 12px; background: var(--brand); color: var(--brand-fg); text-decoration: none; min-height: 48px; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1.5px solid var(--line); }
+.btn.gold { background: var(--gold); color: #2A1D00; }
+.btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* hero */
+.hero { padding-block: clamp(32px, 6vw, 72px); }
+.hero .wrap { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(24px, 5vw, 56px); align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.hero-copy .lead { font-size: 1.1rem; color: var(--muted); max-width: 52ch; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 0; margin: 4px 0 0; list-style: none; color: var(--muted); font-size: 0.92rem; }
+.facts li { display: flex; align-items: center; gap: 8px; }
+.facts svg { width: 16px; height: 16px; color: var(--ok); flex: none; }
+.ratecard { background: var(--brand); color: var(--brand-fg); border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.ratecard .label { color: inherit; opacity: 0.8; }
+.ratecard ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.ratecard li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
+.ratecard li:first-child { border-top: 0; }
+.ratecard .coins { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; }
+.ratecard .price { font-family: var(--font-mono); font-weight: 700; }
+.ratecard .note { font-size: 0.8rem; opacity: 0.8; }
+@media (max-width: 820px) { .hero .wrap { grid-template-columns: 1fr; } }
+
+section { padding-block: clamp(36px, 6vw, 72px); }
+.head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; max-width: 60ch; }
+.head p { color: var(--muted); }
+
+/* packs */
+.packs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: 12px; }
+.pack { position: relative; text-align: left; font: inherit; color: inherit; background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 18px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pack:hover { border-color: var(--brand); }
+.pack[aria-pressed="true"] { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent); }
+.pack .n { font-family: var(--font-display); font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.pack .u { font-size: 0.8rem; color: var(--muted); }
+.pack .p { font-family: var(--font-mono); font-weight: 700; margin-top: 8px; }
+.pack .per { font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); }
+.tag { position: absolute; top: -10px; right: 12px; background: var(--gold); color: #2A1D00; font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.03em; }
+
+/* checkout */
+.checkout { margin-top: 28px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; align-items: start; }
+@media (max-width: 820px) { .checkout { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label, .field .lbl { font-weight: 600; font-size: 0.9rem; }
+.field .hint { font-size: 0.82rem; color: var(--muted); }
+.input { font: inherit; color: var(--fg); background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 14px; min-height: 48px; width: 100%; }
+.input:focus-visible { outline: 3px solid var(--gold); outline-offset: 1px; }
+.input[aria-invalid="true"] { border-color: var(--bad); }
+.err { color: var(--bad); font-size: 0.85rem; min-height: 1.2em; }
+.prefix { display: flex; align-items: stretch; }
+.prefix span { display: grid; place-items: center; padding-inline: 14px; background: var(--surface-2); border: 1.5px solid var(--line); border-right: 0; border-radius: 12px 0 0 12px; color: var(--muted); font-family: var(--font-mono); }
+.prefix .input { border-radius: 0 12px 12px 0; }
+.pay { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.pay button { font: inherit; font-weight: 600; font-size: 0.92rem; color: inherit; background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 8px; cursor: pointer; min-height: 48px; }
+.pay button[aria-pressed="true"] { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 14%, var(--bg)); }
+.summary dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; }
+.summary dt { color: var(--muted); font-size: 0.9rem; }
+.summary dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+.total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 1px dashed var(--line); padding-top: 16px; }
+.total .amt { font-family: var(--font-mono); font-weight: 700; font-size: 1.7rem; }
+.safe { display: flex; gap: 10px; background: color-mix(in srgb, var(--gold) 22%, var(--surface)); border-radius: 12px; padding: 12px 14px; font-size: 0.88rem; }
+.safe svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+
+/* confirmation */
+.done { border: 2px solid var(--ok); }
+.ref { font-family: var(--font-mono); font-weight: 700; font-size: 1.4rem; letter-spacing: 0.04em; }
+.steps-pay { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 8px; }
+.msgbox { background: var(--bg); border: 1px dashed var(--line); border-radius: 12px; padding: 12px 14px; font-family: var(--font-mono); font-size: 0.82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.steps li::before { content: counter(s); font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: var(--brand-fg); display: grid; place-items: center; }
+.steps p { color: var(--muted); font-size: 0.95rem; }
+
+/* payments */
+.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.method { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 4px; }
+.method b { font-family: var(--font-display); font-size: 1.1rem; }
+.method span { color: var(--muted); font-size: 0.9rem; }
+
+/* faq */
+.faq { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 0 18px; }
+summary { cursor: pointer; font-weight: 600; padding: 16px 0; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-family: var(--font-mono); font-size: 1.2rem; }
+details[open] summary::after { content: "–"; }
+details p { color: var(--muted); padding-bottom: 16px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 32px 40px; color: var(--muted); font-size: 0.88rem; }
+footer .wrap { display: flex; flex-direction: column; gap: 10px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; z-index: 40; }
+@media (prefers-reduced-motion: no-preference) {
+  .pack, .btn, .pay button { transition: border-color .15s, box-shadow .15s, filter .15s; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Santim Shop">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#FFC93C" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.2 10.2c0-1.1 1.2-1.8 2.8-1.8s2.8.7 2.8 1.8-1.2 1.6-2.8 1.8-2.8.7-2.8 1.8 1.2 1.8 2.8 1.8 2.8-.7 2.8-1.8"/></svg></span>
+      <span data-i18n="brand">Santim Shop</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="link" href="#packs" data-i18n="nav_packs">Packages</a>
+      <a class="link" href="#how" data-i18n="nav_how">How it works</a>
+      <a class="link" href="#faq" data-i18n="nav_faq">FAQ</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="am" aria-pressed="true">አማ</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="label" data-i18n="eyebrow">Coin top-ups for Ethiopia · Pay in birr</span>
+        <h1 data-i18n="h1">Top up TikTok coins. Pay in birr.</h1>
+        <p class="lead" data-i18n="lead">Choose a pack, send us your TikTok username, pay in birr. We deliver the coins to your account and message you when it is done.</p>
+        <div class="cta-row">
+          <a class="btn gold" href="#packs" data-i18n="cta_buy">Buy coins</a>
+          <a class="btn ghost" href="#how" data-i18n="cta_how">How it works</a>
+        </div>
+        <ul class="facts">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="f1">Username only, never a password</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="f2">Local bank and mobile money</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="f3">Support in Amharic and English</span></li>
+        </ul>
+      </div>
+      <aside class="ratecard" aria-label="Rates">
+        <span class="label" data-i18n="rates">Today's rates</span>
+        <ul id="rate-list"></ul>
+        <p class="note" data-i18n="rate_note">Prices in Ethiopian birr (ETB). Rates can change; the price at checkout is final.</p>
+      </aside>
+    </div>
+  </div>
+
+  <section id="packs">
+    <div class="wrap">
+      <div class="head">
+        <h2 data-i18n="h_packs">Pick your coin pack</h2>
+        <p data-i18n="p_packs">Bigger packs cost less per coin. Tap a pack to start your order.</p>
+      </div>
+      <div class="packs" id="packs-grid" role="group" aria-label="Coin packs"></div>
+
+      <form class="checkout" id="order-form" novalidate>
+        <div class="panel">
+          <h3 data-i18n="h_details">Your details</h3>
+          <div class="field">
+            <label for="username" data-i18n="l_user">TikTok username</label>
+            <div class="prefix"><span aria-hidden="true">@</span><input class="input" id="username" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="yourname" inputmode="text"></div>
+            <span class="hint" data-i18n="h_user">The name after the @ on your profile. We never need your password.</span>
+            <span class="err" id="err-user" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="phone" data-i18n="l_phone">Phone number for updates</label>
+            <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="09 12 34 56 78">
+            <span class="err" id="err-phone" role="alert"></span>
+          </div>
+          <div class="field">
+            <span class="lbl" id="pay-lbl" data-i18n="l_pay">Pay with</span>
+            <div class="pay" id="pay-grid" role="group" aria-labelledby="pay-lbl"></div>
+          </div>
+          <div class="safe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+            <span data-i18n="safe">Never share your TikTok password or SMS code with anyone, including us. We will not ask for them.</span>
+          </div>
+        </div>
+
+        <div class="panel summary" id="summary-panel">
+          <h3 data-i18n="h_sum">Order summary</h3>
+          <dl>
+            <dt data-i18n="s_pack">Pack</dt><dd id="s-pack"></dd>
+            <dt data-i18n="s_user">Account</dt><dd id="s-user">@</dd>
+            <dt data-i18n="s_pay">Payment</dt><dd id="s-pay"></dd>
+          </dl>
+          <div class="total"><span class="label" data-i18n="s_total">Total</span><span class="amt" id="s-total"></span></div>
+          <button class="btn gold" type="submit" id="submit-btn" data-i18n="btn_order">Place order</button>
+        </div>
+      </form>
+
+      <div class="panel done" id="done" hidden aria-live="polite">
+        <span class="label" data-i18n="d_ref">Order reference</span>
+        <div class="ref" id="d-ref"></div>
+        <h3 id="d-title"></h3>
+        <ol class="steps-pay" id="d-steps"></ol>
+        <div class="msgbox" id="d-msg"></div>
+        <div class="cta-row">
+          <button class="btn" type="button" id="copy-btn" data-i18n="btn_copy">Copy message</button>
+          <a class="btn ghost" id="tg-link" href="#" target="_blank" rel="noopener" data-i18n="btn_tg">Open Telegram</a>
+          <button class="btn ghost" type="button" id="new-btn" data-i18n="btn_new">New order</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="head"><h2 data-i18n="h_how">From order to coins in four steps</h2></div>
+      <ol class="steps">
+        <li><h3 data-i18n="st1_t">Choose a pack</h3><p data-i18n="st1_p">Pick the amount of coins and enter your TikTok username.</p></li>
+        <li><h3 data-i18n="st2_t">Send payment</h3><p data-i18n="st2_p">Pay the exact birr amount to our account with your bank or mobile money.</p></li>
+        <li><h3 data-i18n="st3_t">Send the receipt</h3><p data-i18n="st3_p">Message us your order reference and a screenshot of the receipt.</p></li>
+        <li><h3 data-i18n="st4_t">Get your coins</h3><p data-i18n="st4_p">We deliver to your account and confirm by message.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="methods">
+    <div class="wrap">
+      <div class="head"><h2 data-i18n="h_methods">Ways to pay</h2><p data-i18n="p_methods">All payments are in Ethiopian birr.</p></div>
+      <div class="methods" id="methods-grid"></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="head"><h2 data-i18n="h_faq">Questions</h2></div>
+      <div class="faq">
+        <details><summary data-i18n="q1">How long does delivery take?</summary><p data-i18n="a1">Most orders are delivered within 30 minutes of a confirmed payment during business hours.</p></details>
+        <details><summary data-i18n="q2">What do you need from my account?</summary><p data-i18n="a2">Only your public TikTok username. We never ask for your password, email login or verification codes.</p></details>
+        <details><summary data-i18n="q3">What if I sent the wrong username?</summary><p data-i18n="a3">Message us right away with your order reference. We can fix it before delivery. After delivery coins cannot be moved.</p></details>
+        <details><summary data-i18n="q4">Is this run by TikTok?</summary><p data-i18n="a4">No. Santim Shop is an independent store. TikTok is a trademark of its owner and is not connected to this site.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="foot1">Santim Shop is an independent store and is not affiliated with, endorsed by or sponsored by TikTok or ByteDance.</p>
+    <p data-i18n="foot2">Coins are digital goods. Once delivered, orders cannot be refunded.</p>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* ===== Edit these to run the real store ===== */
+var CONFIG = {
+  telegram: "your_telegram_username",
+  packs: [
+    { coins: 70,   price: 150 },
+    { coins: 350,  price: 720 },
+    { coins: 700,  price: 1400, tag: "popular" },
+    { coins: 1400, price: 2750 },
+    { coins: 3500, price: 6800 },
+    { coins: 7000, price: 13400, tag: "best" }
+  ],
+  payments: [
+    { id: "telebirr", name: "Telebirr",  account: "09XX XXX XXX",     holder: "Account holder name" },
+    { id: "cbe",      name: "CBE Birr",  account: "1000XXXXXXXXX",    holder: "Account holder name" },
+    { id: "awash",    name: "Awash Bank", account: "01320XXXXXXXX",   holder: "Account holder name" },
+    { id: "dashen",   name: "Dashen Bank", account: "0XXXXXXXXXXXX",  holder: "Account holder name" }
+  ]
+};
+
+var T = {
+  en: {
+    brand:"Santim Shop", nav_packs:"Packages", nav_how:"How it works", nav_faq:"FAQ",
+    eyebrow:"Coin top-ups for Ethiopia · Pay in birr",
+    h1:"Top up TikTok coins. Pay in birr.",
+    lead:"Choose a pack, send us your TikTok username, pay in birr. We deliver the coins to your account and message you when it is done.",
+    cta_buy:"Buy coins", cta_how:"How it works",
+    f1:"Username only, never a password", f2:"Local bank and mobile money", f3:"Support in Amharic and English",
+    rates:"Today's rates", rate_note:"Prices in Ethiopian birr (ETB). Rates can change; the price at checkout is final.",
+    h_packs:"Pick your coin pack", p_packs:"Bigger packs cost less per coin. Tap a pack to start your order.",
+    h_details:"Your details", l_user:"TikTok username", h_user:"The name after the @ on your profile. We never need your password.",
+    l_phone:"Phone number for updates", l_pay:"Pay with",
+    safe:"Never share your TikTok password or SMS code with anyone, including us. We will not ask for them.",
+    h_sum:"Order summary", s_pack:"Pack", s_user:"Account", s_pay:"Payment", s_total:"Total", btn_order:"Place order",
+    d_ref:"Order reference", btn_copy:"Copy message", btn_tg:"Open Telegram", btn_new:"New order",
+    h_how:"From order to coins in four steps",
+    st1_t:"Choose a pack", st1_p:"Pick the amount of coins and enter your TikTok username.",
+    st2_t:"Send payment", st2_p:"Pay the exact birr amount to our account with your bank or mobile money.",
+    st3_t:"Send the receipt", st3_p:"Message us your order reference and a screenshot of the receipt.",
+    st4_t:"Get your coins", st4_p:"We deliver to your account and confirm by message.",
+    h_methods:"Ways to pay", p_methods:"All payments are in Ethiopian birr.",
+    h_faq:"Questions",
+    q1:"How long does delivery take?", a1:"Most orders are delivered within 30 minutes of a confirmed payment during business hours.",
+    q2:"What do you need from my account?", a2:"Only your public TikTok username. We never ask for your password, email login or verification codes.",
+    q3:"What if I sent the wrong username?", a3:"Message us right away with your order reference. We can fix it before delivery. After delivery coins cannot be moved.",
+    q4:"Is this run by TikTok?", a4:"No. Santim Shop is an independent store. TikTok is a trademark of its owner and is not connected to this site.",
+    foot1:"Santim Shop is an independent store and is not affiliated with, endorsed by or sponsored by TikTok or ByteDance.",
+    foot2:"Coins are digital goods. Once delivered, orders cannot be refunded.",
+    coins:"coins", popular:"Popular", best:"Best value", per:"per coin",
+    err_user:"Enter a valid username: 2 to 24 letters, numbers, dots or underscores.",
+    err_phone:"Enter a valid Ethiopian phone number, like 0912345678.",
+    done_title:"Order placed. Now pay and send your receipt.",
+    pay_s1:"Pay {amt} to {name}: {acct} ({holder}).",
+    pay_s2:"Send us the message below on Telegram with a screenshot of your receipt.",
+    pay_s3:"We deliver {coins} coins to @{user} and confirm by message.",
+    msg:"Order {ref}\n{coins} coins for @{user}\nTotal {amt}\nPaid with {name}\nPhone {phone}",
+    copied:"Copied", copy_fail:"Select the message and copy it"
+  },
+  am: {
+    brand:"ሳንቲም ሱቅ", nav_packs:"ፓኬጆች", nav_how:"እንዴት ይሰራል", nav_faq:"ጥያቄዎች",
+    eyebrow:"የኮይን መሙያ ለኢትዮጵያ · በብር ይክፈሉ",
+    h1:"የቲክቶክ ኮይን ይሙሉ። በብር ይክፈሉ።",
+    lead:"ፓኬጅ ይምረጡ፣ የቲክቶክ ተጠቃሚ ስምዎን ይላኩ፣ በብር ይክፈሉ። ኮይኑን ወደ አካውንትዎ እናደርሳለን፣ ሲጠናቀቅም መልዕክት እንልካለን።",
+    cta_buy:"ኮይን ግዙ", cta_how:"እንዴት ይሰራል",
+    f1:"የተጠቃሚ ስም ብቻ፣ የይለፍ ቃል በጭራሽ", f2:"የሀገር ውስጥ ባንክና ሞባይል ገንዘብ", f3:"በአማርኛና በእንግሊዝኛ ድጋፍ",
+    rates:"የዛሬ ዋጋ", rate_note:"ዋጋዎች በኢትዮጵያ ብር (ETB) ናቸው። ዋጋ ሊቀየር ይችላል፤ በክፍያ ወቅት የሚታየው ዋጋ የመጨረሻ ነው።",
+    h_packs:"የኮይን ፓኬጅ ይምረጡ", p_packs:"ትልቅ ፓኬጅ በአንድ ኮይን ርካሽ ነው። ትዕዛዝ ለመጀመር ፓኬጅ ይንኩ።",
+    h_details:"የእርስዎ መረጃ", l_user:"የቲክቶክ ተጠቃሚ ስም", h_user:"በፕሮፋይልዎ ላይ ከ@ በኋላ ያለው ስም። የይለፍ ቃልዎን በጭራሽ አንጠይቅም።",
+    l_phone:"ለማሳወቂያ የስልክ ቁጥር", l_pay:"የመክፈያ መንገድ",
+    safe:"የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን ለማንም አያጋሩ፤ እኛንም ጨምሮ። አንጠይቅም።",
+    h_sum:"የትዕዛዝ ማጠቃለያ", s_pack:"ፓኬጅ", s_user:"አካውንት", s_pay:"ክፍያ", s_total:"ጠቅላላ", btn_order:"ትዕዛዝ አስገባ",
+    d_ref:"የትዕዛዝ ቁጥር", btn_copy:"መልዕክቱን ቅዳ", btn_tg:"ቴሌግራም ክፈት", btn_new:"አዲስ ትዕዛዝ",
+    h_how:"ከትዕዛዝ እስከ ኮይን በአራት ደረጃ",
+    st1_t:"ፓኬጅ ይምረጡ", st1_p:"የኮይን መጠን ይምረጡ እና የቲክቶክ ተጠቃሚ ስምዎን ያስገቡ።",
+    st2_t:"ክፍያ ይላኩ", st2_p:"ትክክለኛውን የብር መጠን በባንክ ወይም በሞባይል ገንዘብ ወደ አካውንታችን ይላኩ።",
+    st3_t:"ደረሰኙን ይላኩ", st3_p:"የትዕዛዝ ቁጥርዎን እና የደረሰኝ ምስል ይላኩልን።",
+    st4_t:"ኮይንዎን ይቀበሉ", st4_p:"ወደ አካውንትዎ እናደርሳለን፣ በመልዕክት እናረጋግጣለን።",
+    h_methods:"የመክፈያ መንገዶች", p_methods:"ሁሉም ክፍያዎች በኢትዮጵያ ብር ናቸው።",
+    h_faq:"ጥያቄዎች",
+    q1:"ማድረስ ምን ያህል ጊዜ ይወስዳል?", a1:"አብዛኛዎቹ ትዕዛዞች በስራ ሰዓት ክፍያ ከተረጋገጠ በኋላ በ30 ደቂቃ ውስጥ ይደርሳሉ።",
+    q2:"ከአካውንቴ ምን ያስፈልጋል?", a2:"የህዝብ የቲክቶክ ተጠቃሚ ስምዎ ብቻ። የይለፍ ቃል፣ የኢሜይል መግቢያ ወይም የማረጋገጫ ኮድ በጭራሽ አንጠይቅም።",
+    q3:"የተሳሳተ ተጠቃሚ ስም ብልክስ?", a3:"በትዕዛዝ ቁጥርዎ ወዲያውኑ ያሳውቁን። ከማድረስ በፊት ማስተካከል እንችላለን። ከደረሰ በኋላ ኮይን መመለስ አይቻልም።",
+    q4:"ይህ በቲክቶክ የሚመራ ነው?", a4:"አይደለም። ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው። ቲክቶክ የባለቤቱ የንግድ ምልክት ሲሆን ከዚህ ድረ-ገጽ ጋር ግንኙነት የለውም።",
+    foot1:"ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው፤ ከቲክቶክ ወይም ባይትዳንስ ጋር ግንኙነት፣ ድጋፍ ወይም ስፖንሰርሺፕ የለውም።",
+    foot2:"ኮይን ዲጂታል ምርት ነው። ከደረሰ በኋላ ገንዘብ አይመለስም።",
+    coins:"ኮይን", popular:"ተወዳጅ", best:"ምርጥ ዋጋ", per:"በአንድ ኮይን",
+    err_user:"ትክክለኛ ስም ያስገቡ፤ ከ2 እስከ 24 ፊደል፣ ቁጥር፣ ነጥብ ወይም underscore።",
+    err_phone:"ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ፣ ለምሳሌ 0912345678።",
+    done_title:"ትዕዛዝዎ ተመዝግቧል። አሁን ይክፈሉ እና ደረሰኝ ይላኩ።",
+    pay_s1:"{amt} ወደ {name} ይክፈሉ፦ {acct} ({holder})።",
+    pay_s2:"ከታች ያለውን መልዕክት ከደረሰኝ ምስል ጋር በቴሌግራም ይላኩልን።",
+    pay_s3:"{coins} ኮይን ወደ @{user} እናደርሳለን፣ በመልዕክት እናረጋግጣለን።",
+    msg:"ትዕዛዝ {ref}\n{coins} ኮይን ለ @{user}\nጠቅላላ {amt}\nየከፈልኩት በ {name}\nስልክ {phone}",
+    copied:"ተቀድቷል", copy_fail:"መልዕክቱን መርጠው ይቅዱ"
+  }
+};
+
+var state = { lang: "am", pack: 2, pay: "telebirr", order: null };
+function $(id) { return document.getElementById(id); }
+function t(k) { return T[state.lang][k] || T.en[k] || k; }
+function fmt(n) { return n.toLocaleString("en-US"); }
+function etb(n) { return fmt(n) + (state.lang === "am" ? " ብር" : " ETB"); }
+function fill(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
+function payById(id) { return CONFIG.payments.filter(function (p) { return p.id === id; })[0]; }
+
+function renderStatic() {
+  document.documentElement.lang = state.lang === "am" ? "am" : "en";
+  var els = document.querySelectorAll("[data-i18n]");
+  for (var i = 0; i < els.length; i++) els[i].textContent = t(els[i].getAttribute("data-i18n"));
+  var btns = document.querySelectorAll(".lang button");
+  for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].dataset.lang === state.lang));
+  renderRates(); renderPacks(); renderPay(); renderMethods(); renderSummary();
+  if (state.order) renderDone();
+}
+
+function renderRates() {
+  var ul = $("rate-list"); ul.innerHTML = "";
+  [1, 2, 4].forEach(function (i) {
+    var p = CONFIG.packs[i], li = document.createElement("li");
+    li.innerHTML = '<span class="coins">' + fmt(p.coins) + ' <small style="font-size:.8rem;font-weight:500;opacity:.8">' + t("coins") + '</small></span><span class="price">' + etb(p.price) + '</span>';
+    ul.appendChild(li);
+  });
+}
+
+function renderPacks() {
+  var g = $("packs-grid"); g.innerHTML = "";
+  CONFIG.packs.forEach(function (p, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "pack"; b.setAttribute("aria-pressed", String(i === state.pack));
+    var per = (p.price / p.coins).toFixed(2);
+    b.innerHTML = (p.tag ? '<span class="tag">' + t(p.tag) + '</span>' : '') +
+      '<span class="n mono">' + fmt(p.coins) + '</span><span class="u">' + t("coins") + '</span>' +
+      '<span class="p">' + etb(p.price) + '</span><span class="per">' + per + (state.lang === "am" ? ' ብር / ' : ' ETB / ') + t("coins") + '</span>';
+    b.addEventListener("click", function () { state.pack = i; renderPacks(); renderSummary(); });
+    g.appendChild(b);
+  });
+}
+
+function renderPay() {
+  var g = $("pay-grid"); g.innerHTML = "";
+  CONFIG.payments.forEach(function (p) {
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = p.name; b.setAttribute("aria-pressed", String(p.id === state.pay));
+    b.addEventListener("click", function () { state.pay = p.id; renderPay(); renderSummary(); });
+    g.appendChild(b);
+  });
+}
+
+function renderMethods() {
+  var g = $("methods-grid"); g.innerHTML = "";
+  CONFIG.payments.forEach(function (p) {
+    var d = document.createElement("div"); d.className = "method";
+    d.innerHTML = '<b></b><span></span>'; d.firstChild.textContent = p.name; d.lastChild.textContent = state.lang === "am" ? "ብር" : "ETB";
+    g.appendChild(d);
+  });
+}
+
+function cleanUser() { return $("username").value.trim().replace(/^@+/, ""); }
+function renderSummary() {
+  var p = CONFIG.packs[state.pack];
+  $("s-pack").textContent = fmt(p.coins) + " " + t("coins");
+  $("s-user").textContent = "@" + (cleanUser() || "…");
+  $("s-pay").textContent = payById(state.pay).name;
+  $("s-total").textContent = etb(p.price);
+}
+
+function validate() {
+  var ok = true, u = cleanUser(), ph = $("phone").value.replace(/[\s-]/g, "");
+  var uOk = /^[A-Za-z0-9._]{2,24}$/.test(u);
+  var pOk = /^(\+?251|0)?[79]\d{8}$/.test(ph);
+  $("username").setAttribute("aria-invalid", String(!uOk)); $("err-user").textContent = uOk ? "" : t("err_user");
+  $("phone").setAttribute("aria-invalid", String(!pOk)); $("err-phone").textContent = pOk ? "" : t("err_phone");
+  if (!uOk) { $("username").focus(); ok = false; } else if (!pOk) { $("phone").focus(); ok = false; }
+  return ok;
+}
+
+function newRef() {
+  var a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = "SC-";
+  for (var i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)];
+  return s;
+}
+
+function renderDone() {
+  var o = state.order, p = payById(o.pay), amt = etb(o.price);
+  var vars = { amt: amt, name: p.name, acct: p.account, holder: p.holder, coins: fmt(o.coins), user: o.user, ref: o.ref, phone: o.phone };
+  $("d-ref").textContent = o.ref;
+  $("d-title").textContent = t("done_title");
+  $("d-steps").innerHTML = "";
+  ["pay_s1", "pay_s2", "pay_s3"].forEach(function (k) {
+    var li = document.createElement("li"); li.textContent = fill(t(k), vars); $("d-steps").appendChild(li);
+  });
+  $("d-msg").textContent = fill(t("msg"), vars);
+  $("tg-link").href = "https://t.me/" + CONFIG.telegram;
+}
+
+var toastTimer;
+function toast(msg) {
+  var el = $("toast"); el.textContent = msg; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 2000);
+}
+
+$("order-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  if (!validate()) return;
+  var p = CONFIG.packs[state.pack];
+  state.order = { ref: newRef(), coins: p.coins, price: p.price, user: cleanUser(), phone: $("phone").value.trim(), pay: state.pay };
+  renderDone();
+  $("order-form").hidden = true; $("done").hidden = false;
+  $("done").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+$("copy-btn").addEventListener("click", function () {
+  var text = $("d-msg").textContent;
+  function fallback() {
+    var r = document.createRange(); r.selectNodeContents($("d-msg"));
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast(t("copy_fail"));
+  }
+  try { navigator.clipboard.writeText(text).then(function () { toast(t("copied")); }, fallback); } catch (err) { fallback(); }
+});
+
+$("new-btn").addEventListener("click", function () {
+  state.order = null; $("done").hidden = true; $("order-form").hidden = false;
+  $("username").value = ""; $("phone").value = ""; renderSummary();
+  $("packs").scrollIntoView({ behavior: "smooth" });
+});
+
+$("username").addEventListener("input", renderSummary);
+var lb = document.querySelectorAll(".lang button");
+for (var i = 0; i < lb.length; i++) lb[i].addEventListener("click", function (e) { state.lang = e.currentTarget.dataset.lang; renderStatic(); });
+
+fetch("config.json", { cache: "no-store" })
+  .then(function (r) { return r.ok ? r.json() : null; })
+  .then(function (c) {
+    if (c && c.packs && c.payments) {
+      CONFIG = c;
+      if (state.pack >= CONFIG.packs.length) state.pack = 0;
+      if (!payById(state.pay)) state.pay = CONFIG.payments[0].id;
+    }
+  })
+  .catch(function () {})
+  .then(renderStatic);
+</script>
+
+</body>
+</html>
