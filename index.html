@@ -245,10 +245,6 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
             <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="09 12 34 56 78">
             <span class="err" id="err-phone" role="alert"></span>
           </div>
-          <div class="field">
-            <span class="lbl" id="pay-lbl" data-i18n="l_pay">Pay with</span>
-            <div class="pay" id="pay-grid" role="group" aria-labelledby="pay-lbl"></div>
-          </div>
           <div class="safe">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
             <span data-i18n="safe">Never share your TikTok password or SMS code with anyone, including us. We will not ask for them.</span>
@@ -260,7 +256,6 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
           <dl>
             <dt data-i18n="s_pack">Pack</dt><dd id="s-pack"></dd>
             <dt data-i18n="s_user">Account</dt><dd id="s-user">@</dd>
-            <dt data-i18n="s_pay">Payment</dt><dd id="s-pay"></dd>
           </dl>
           <div class="total"><span class="label" data-i18n="s_total">Total</span><span class="amt" id="s-total"></span></div>
           <button class="btn gold" type="submit" id="submit-btn" data-i18n="btn_order">Place order</button>
@@ -287,17 +282,10 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
       <div class="head"><h2 data-i18n="h_how">From order to coins in four steps</h2></div>
             <ol class="steps">
         <li><h3 data-i18n="st1_t">Choose a pack</h3><p data-i18n="st1_p">Pick the amount of coins and enter your TikTok username.</p></li>
-        <li><h3 data-i18n="st2_t">Send payment</h3><p data-i18n="st2_p">Pay the exact birr amount to our account with your bank or mobile money.</p></li>
+        <li><h3 data-i18n="st2_t">Send payment</h3><p data-i18n="st2_p">We reply on Telegram with the account to pay, in birr.</p></li>
         <li><h3 data-i18n="st3_t">Send the receipt</h3><p data-i18n="st3_p">Message us your order reference and a screenshot of the receipt.</p></li>
         <li><h3 data-i18n="st4_t">Get your coins</h3><p data-i18n="st4_p">We deliver to your account and confirm by message.</p></li>
       </ol>
-    </div>
-  </section>
-
-  <section id="methods">
-    <div class="wrap">
-      <div class="head"><h2 data-i18n="h_methods">Ways to pay</h2><p data-i18n="p_methods">All payments are in Ethiopian birr.</p></div>
-      <div class="methods" id="methods-grid"></div>
     </div>
   </section>
 
@@ -354,16 +342,15 @@ var T = {
     rates:"Today's rates", rate_note:"Prices in Ethiopian birr (ETB). Rates can change; the price at checkout is final.",
     h_packs:"Pick your coin pack", p_packs:"Bigger packs cost less per coin. Tap a pack to start your order.",
     h_details:"Your details", l_user:"TikTok username", h_user:"The name after the @ on your profile. We never need your password.",
-    l_phone:"Phone number for updates", l_pay:"Pay with",
+    l_phone:"Phone number for updates",
     safe:"Never share your TikTok password or SMS code with anyone, including us. We will not ask for them.",
-    h_sum:"Order summary", s_pack:"Pack", s_user:"Account", s_pay:"Payment", s_total:"Total", btn_order:"Place order",
+    h_sum:"Order summary", s_pack:"Pack", s_user:"Account", s_total:"Total", btn_order:"Place order",
     d_ref:"Order reference", btn_copy:"Copy message", btn_tg:"Open Telegram", btn_new:"New order",
     h_how:"From order to coins in four steps",
     st1_t:"Choose a pack", st1_p:"Pick the amount of coins and enter your TikTok username.",
     st2_t:"Send payment", st2_p:"Pay the exact birr amount to our account with your bank or mobile money.",
     st3_t:"Send the receipt", st3_p:"Message us your order reference and a screenshot of the receipt.",
     st4_t:"Get your coins", st4_p:"We deliver to your account and confirm by message.",
-    h_methods:"Ways to pay", p_methods:"All payments are in Ethiopian birr.",
     h_faq:"Questions",
     q1:"How long does delivery take?", a1:"Most orders are delivered within 30 minutes of a confirmed payment during business hours.",
     q2:"What do you need from my account?", a2:"Only your public TikTok username. We never ask for your password, email login or verification codes.",
@@ -376,10 +363,10 @@ var T = {
     err_user:"Enter a valid username: 2 to 24 letters, numbers, dots or underscores.",
     err_phone:"Enter a valid Ethiopian phone number, like 0912345678.",
     done_title:"Order placed. Now pay and send your receipt.",
-    pay_s1:"Pay {amt} to {name}: {acct} ({holder}).",
-    pay_s2:"Send us the message below on Telegram with a screenshot of your receipt.",
-    pay_s3:"We deliver {coins} coins to @{user} and confirm by message.",
-    msg:"Order {ref}\n{coins} coins for @{user}\nTotal {amt}\nPaid with {name}\nPhone {phone}",
+    pay_s1:"Send us the message below on Telegram.",
+    pay_s2:"We reply with the account to pay, in birr.",
+    pay_s3:"Pay, send the receipt, and we deliver {coins} coins to @{user}.",
+    msg:"Order {ref}\n{coins} coins for @{user}\nTotal {amt}\nPhone {phone}",
     copied:"Copied", copy_fail:"Select the message and copy it"
   },
   am: {
@@ -392,7 +379,7 @@ var T = {
     rates:"የዛሬ ዋጋ", rate_note:"ዋጋዎች በኢትዮጵያ ብር (ETB) ናቸው። ዋጋ ሊቀየር ይችላል፤ በክፍያ ወቅት የሚታየው ዋጋ የመጨረሻ ነው።",
     h_packs:"የኮይን ፓኬጅ ይምረጡ", p_packs:"ትልቅ ፓኬጅ በአንድ ኮይን ርካሽ ነው። ትዕዛዝ ለመጀመር ፓኬጅ ይንኩ።",
     h_details:"የእርስዎ መረጃ", l_user:"የቲክቶክ ተጠቃሚ ስም", h_user:"በፕሮፋይልዎ ላይ ከ@ በኋላ ያለው ስም። የይለፍ ቃልዎን በጭራሽ አንጠይቅም።",
-    l_phone:"ለማሳወቂያ የስልክ ቁጥር", l_pay:"የመክፈያ መንገድ",
+    l_phone:"ለማሳወቂያ የስልክ ቁጥር",
     safe:"የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን ለማንም አያጋሩ፤ እኛንም ጨምሮ። አንጠይቅም።",
     h_sum:"የትዕዛዝ ማጠቃለያ", s_pack:"ፓኬጅ", s_user:"አካውንት", s_pay:"ክፍያ", s_total:"ጠቅላላ", btn_order:"ትዕዛዝ አስገባ",
     d_ref:"የትዕዛዝ ቁጥር", btn_copy:"መልዕክቱን ቅዳ", btn_tg:"ቴሌግራም ክፈት", btn_new:"አዲስ ትዕዛዝ",
