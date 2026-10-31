@@ -4,7 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Santim Shop</title>
-<style>html{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}
+/* chat */
+.chat-fab { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 35; width: 58px; height: 58px; border-radius: 50%; border: 0; background: var(--gold); color: #2A1D00; display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.chat-fab svg { width: 28px; height: 28px; }
+.chat { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); z-index: 36; width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100vh - 140px)); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,.28); display: flex; flex-direction: column; overflow: hidden; }
+.chat-head { background: var(--brand); color: var(--brand-fg); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.chat-head b { font-family: var(--font-display); font-size: 1.05rem; }
+.chat-head small { display: block; opacity: .85; font-size: .78rem; }
+.chat-x { background: transparent; border: 0; color: inherit; cursor: pointer; font-size: 1.5rem; line-height: 1; padding: 4px 8px; border-radius: 8px; }
+.chat-log { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 160px; }
+.msg { max-width: 86%; padding: 10px 13px; border-radius: 14px; font-size: .94rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.bot { background: var(--surface-2); align-self: flex-start; border-bottom-left-radius: 4px; }
+.msg.me { background: var(--brand); color: var(--brand-fg); align-self: flex-end; border-bottom-right-radius: 4px; }
+.msg a { color: inherit; font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 14px 10px; }
+.chips button { font: inherit; font-size: .85rem; font-weight: 600; background: var(--bg); color: var(--fg); border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+.chips button:hover { border-color: var(--brand); }
+.chat-in { display: flex; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--line); }
+.chat-in .input { min-height: 44px; padding: 10px 12px; }
+.chat-in .btn { min-height: 44px; padding: 10px 16px; }
+</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap">
 <style>
 /* Layout: sticky top bar, split hero with live rate card, pack grid feeding one checkout panel, then steps, payments, FAQ.
@@ -561,5 +581,107 @@ fetch("config.json", { cache: "no-store" })
   .then(renderStatic);
 </script>
 
+
+<button class="chat-fab" id="chat-fab" type="button" aria-label="Chat" aria-expanded="false" aria-controls="chat">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.7A8 8 0 1 1 21 12z"/></svg>
+</button>
+<section class="chat" id="chat" role="dialog" aria-label="Chat" hidden>
+  <div class="chat-head"><div><b id="chat-title"></b><small id="chat-sub"></small></div><button class="chat-x" id="chat-x" type="button" aria-label="Close">×</button></div>
+  <div class="chat-log" id="chat-log" aria-live="polite"></div>
+  <div class="chips" id="chat-chips"></div>
+  <form class="chat-in" id="chat-form" autocomplete="off">
+    <input class="input" id="chat-text" type="text" aria-label="Message">
+    <button class="btn" type="submit" id="chat-send"></button>
+  </form>
+</section>
+
+<script>
+(function () {
+  var C = {
+    en: {
+      title: "Santim Shop", sub: "Quick answers · Telegram for a person", ph: "Type your question", send: "Send",
+      hi: "Hi! Pick a question below or type your own.",
+      chips: { price: "Prices", pay: "How to pay", time: "Delivery time", wrong: "Wrong username", safe: "Is it safe?", human: "Talk to a person" },
+      price: function () { return CONFIG.packs.map(function (p) { return fmt(p.coins) + " coins: " + etb(p.price); }).join("\n") + "\nThe price at checkout is final."; },
+      pay: "1. Pick a pack and enter your TikTok username.\n2. Place the order and pay the birr amount to our account.\n3. Send the order reference and your receipt on Telegram.\n4. We deliver the coins and confirm.",
+      time: "Most orders are delivered within 30 minutes of a confirmed payment during business hours.",
+      wrong: "Message us right away with your order reference. We can fix the username before delivery. After delivery coins cannot be moved.",
+      safe: "We only need your public username. Never share your password or SMS code with anyone, including us.",
+      human: function () { return "Message us on Telegram: https://t.me/" + CONFIG.telegram; },
+      fallback: "I can answer about prices, payment, delivery and safety. For anything else, message us on Telegram."
+    },
+    am: {
+      title: "ሳንቲም ሱቅ", sub: "ፈጣን መልሶች · ለሰው ቴሌግራም", ph: "ጥያቄዎን ይጻፉ", send: "ላክ",
+      hi: "ሰላም! ከታች ጥያቄ ይምረጡ ወይም የራስዎን ይጻፉ።",
+      chips: { price: "ዋጋ", pay: "እንዴት ይከፈላል", time: "የማድረስ ጊዜ", wrong: "የተሳሳተ ስም", safe: "ደህንነት", human: "ሰው ያናግሩኝ" },
+      price: function () { return CONFIG.packs.map(function (p) { return fmt(p.coins) + " ኮይን: " + etb(p.price); }).join("\n") + "\nበክፍያ ወቅት የሚታየው ዋጋ የመጨረሻ ነው።"; },
+      pay: "1. ፓኬጅ ይምረጡ እና የቲክቶክ ተጠቃሚ ስምዎን ያስገቡ።\n2. ትዕዛዝ ያስገቡ እና የብሩን መጠን ወደ አካውንታችን ይክፈሉ።\n3. የትዕዛዝ ቁጥርዎን እና ደረሰኙን በቴሌግራም ይላኩ።\n4. ኮይኑን እናደርሳለን፣ እናረጋግጣለን።",
+      time: "አብዛኛዎቹ ትዕዛዞች በስራ ሰዓት ክፍያ ከተረጋገጠ በኋላ በ30 ደቂቃ ውስጥ ይደርሳሉ።",
+      wrong: "በትዕዛዝ ቁጥርዎ ወዲያውኑ ያሳውቁን። ከማድረስ በፊት ስሙን ማስተካከል እንችላለን። ከደረሰ በኋላ ኮይን መመለስ አይቻልም።",
+      safe: "የህዝብ ተጠቃሚ ስምዎ ብቻ ያስፈልገናል። የይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን ለማንም አያጋሩ፤ እኛንም ጨምሮ።",
+      human: function () { return "በቴሌግራም ያናግሩን: https://t.me/" + CONFIG.telegram; },
+      fallback: "ስለ ዋጋ፣ ክፍያ፣ ማድረስና ደህንነት መመለስ እችላለሁ። ለሌላ ጉዳይ በቴሌግራም ያናግሩን።"
+    }
+  };
+  var KEYS = [
+    ["price", /price|cost|how much|birr|ዋጋ|ስንት|ብር/i],
+    ["safe", /safe|password|scam|trust|ደህንነት|ይለፍ|አስተማማኝ|ማጭበርበር/i],
+    ["wrong", /wrong|mistake|change.*user|ስህተት|የተሳሳተ|ተሳስቼ/i],
+    ["time", /time|long|deliver|when|minute|ጊዜ|መቼ|ይደርሳል|ደቂቃ|ማድረስ/i],
+    ["pay", /pay|bank|telebirr|cbe|how|order|ክፍያ|እንዴት|ባንክ|ትዕዛዝ|መክፈል/i],
+    ["human", /person|human|agent|telegram|support|ሰው|ድጋፍ|ቴሌግራም/i]
+  ];
+  var el = function (id) { return document.getElementById(id); };
+  var log = el("chat-log"), started = false;
+  function L() { return C[state.lang] || C.en; }
+  function linkify(node, text) {
+    var re = /(https?:\/\/[^\s]+)/g, last = 0, m;
+    while ((m = re.exec(text))) {
+      node.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = document.createElement("a"); a.href = m[1]; a.target = "_blank"; a.rel = "noopener"; a.textContent = m[1];
+      node.appendChild(a); last = m.index + m[1].length;
+    }
+    node.appendChild(document.createTextNode(text.slice(last)));
+  }
+  function add(kind, text) {
+    var d = document.createElement("div"); d.className = "msg " + kind; linkify(d, text);
+    log.appendChild(d); log.scrollTop = log.scrollHeight;
+  }
+  function answer(key) {
+    var v = L()[key]; return typeof v === "function" ? v() : v;
+  }
+  function renderChrome() {
+    var l = L();
+    el("chat-title").textContent = l.title; el("chat-sub").textContent = l.sub;
+    el("chat-text").placeholder = l.ph; el("chat-send").textContent = l.send;
+    var box = el("chat-chips"); box.innerHTML = "";
+    Object.keys(l.chips).forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = l.chips[k];
+      b.addEventListener("click", function () { add("me", l.chips[k]); add("bot", answer(k)); });
+      box.appendChild(b);
+    });
+  }
+  function open() {
+    el("chat").hidden = false; el("chat-fab").setAttribute("aria-expanded", "true");
+    renderChrome();
+    if (!started) { started = true; add("bot", L().hi); }
+    el("chat-text").focus();
+  }
+  function close() { el("chat").hidden = true; el("chat-fab").setAttribute("aria-expanded", "false"); el("chat-fab").focus(); }
+  el("chat-fab").addEventListener("click", function () { el("chat").hidden ? open() : close(); });
+  el("chat-x").addEventListener("click", close);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !el("chat").hidden) close(); });
+  el("chat-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = el("chat-text").value.trim(); if (!v) return;
+    add("me", v); el("chat-text").value = "";
+    var hit = null;
+    for (var i = 0; i < KEYS.length; i++) if (KEYS[i][1].test(v)) { hit = KEYS[i][0]; break; }
+    add("bot", hit ? answer(hit) : L().fallback + "\nhttps://t.me/" + CONFIG.telegram);
+  });
+  var lb = document.querySelectorAll(".lang button");
+  for (var i = 0; i < lb.length; i++) lb[i].addEventListener("click", function () { if (!el("chat").hidden) renderChrome(); });
+})();
+</script>
 </body>
 </html>
