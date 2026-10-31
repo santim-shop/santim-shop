@@ -24,6 +24,8 @@
 .chat-in { display: flex; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--line); }
 .chat-in .input { min-height: 44px; padding: 10px 12px; }
 .chat-in .btn { min-height: 44px; padding: 10px 16px; }
+.notice { background: var(--gold); color: #2A1D00; font-weight: 600; text-align: center; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); }
+.notice.closed { background: var(--bad); color: #fff; }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap">
 <style>
@@ -213,6 +215,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
     </nav>
   </div>
 </header>
+<div class="notice" id="notice" role="status" hidden></div>
 
 <main id="top">
   <div class="hero">
@@ -386,7 +389,7 @@ var T = {
     q4:"Is this run by TikTok?", a4:"No. Santim Shop is an independent store. TikTok is a trademark of its owner and is not connected to this site.",
     foot1:"Santim Shop is an independent store and is not affiliated with, endorsed by or sponsored by TikTok or ByteDance.",
     foot2:"Coins are digital goods. Once delivered, orders cannot be refunded.",
-    coins:"coins", popular:"Popular", best:"Best value", per:"per coin",
+    closed:"The shop is closed for now. Please check back later.", coins:"coins", popular:"Popular", best:"Best value", per:"per coin",
     err_user:"Enter a valid username: 2 to 24 letters, numbers, dots or underscores.",
     err_phone:"Enter a valid Ethiopian phone number, like 0912345678.",
     done_title:"Order placed. Now pay and send your receipt.",
@@ -423,7 +426,7 @@ var T = {
     q4:"ይህ በቲክቶክ የሚመራ ነው?", a4:"አይደለም። ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው። ቲክቶክ የባለቤቱ የንግድ ምልክት ሲሆን ከዚህ ድረ-ገጽ ጋር ግንኙነት የለውም።",
     foot1:"ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው፤ ከቲክቶክ ወይም ባይትዳንስ ጋር ግንኙነት፣ ድጋፍ ወይም ስፖንሰርሺፕ የለውም።",
     foot2:"ኮይን ዲጂታል ምርት ነው። ከደረሰ በኋላ ገንዘብ አይመለስም።",
-    coins:"ኮይን", popular:"ተወዳጅ", best:"ምርጥ ዋጋ", per:"በአንድ ኮይን",
+    closed:"ሱቁ ለጊዜው ዝግ ነው። ቆይተው ይመለሱ።", coins:"ኮይን", popular:"ተወዳጅ", best:"ምርጥ ዋጋ", per:"በአንድ ኮይን",
     err_user:"ትክክለኛ ስም ያስገቡ፤ ከ2 እስከ 24 ፊደል፣ ቁጥር፣ ነጥብ ወይም underscore።",
     err_phone:"ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ፣ ለምሳሌ 0912345678።",
     done_title:"ትዕዛዝዎ ተመዝግቧል። አሁን ይክፈሉ እና ደረሰኝ ይላኩ።",
@@ -449,8 +452,15 @@ function renderStatic() {
   for (var i = 0; i < els.length; i++) els[i].textContent = t(els[i].getAttribute("data-i18n"));
   var btns = document.querySelectorAll(".lang button");
   for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].dataset.lang === state.lang));
-  renderRates(); renderPacks(); renderPay(); renderMethods(); renderSummary();
+  renderRates(); renderPacks(); renderPay(); renderMethods(); renderSummary(); applyNotice();
   if (state.order) renderDone();
+}
+
+function applyNotice() {
+  var el = $("notice"), closed = CONFIG.open === false;
+  var text = closed ? t("closed") : ((CONFIG.notice && (CONFIG.notice[state.lang] || CONFIG.notice.en || CONFIG.notice.am)) || "");
+  el.textContent = text; el.hidden = !text; el.className = "notice" + (closed ? " closed" : "");
+  $("submit-btn").disabled = closed;
 }
 
 function renderRates() {
