@@ -1,5 +1,16 @@
 {
   "open": true,
+  "video": true,
+  "texts": {
+    "am": {
+      "h_user": "የTiktok login እና password በ telegram ይላኩ",
+      "safe": "የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን በ telegram ይላኩልን"
+    },
+    "en": {
+      "h_user": "The name of your TikTok login and password",
+      "safe": "TikTok password or SMS code with anyone, including send by telegram"
+    }
+  },
   "notice": {
     "am": "",
     "en": ""
@@ -7,18 +18,8 @@
   "telegram": "your_telegram_username",
   "packs": [
     {
-      "coins": 5000,
-      "price": 0
-    },
-    {
-      "coins": 10000,
-      "price": 0,
-      "tag": "popular"
-    },
-    {
-      "coins": 20000,
-      "price": 0,
-      "tag": "best"
+      "coins": 1000,
+      "price": 2600
     }
   ],
   "payments": [
