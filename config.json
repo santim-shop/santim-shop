@@ -1,6 +1,6 @@
 {
   "open": true,
-  "video": true,
+  "video": false,
   "texts": {
     "am": {
       "h_user": "የTiktok login እና password በ telegram ይላኩ",
