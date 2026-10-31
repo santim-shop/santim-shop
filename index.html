@@ -285,7 +285,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
   <section id="how">
     <div class="wrap">
       <div class="head"><h2 data-i18n="h_how">From order to coins in four steps</h2></div>
-      <div style="display:flex;justify-content:center;margin-bottom:28px">
+      <div id="video-wrap" style="display:flex;justify-content:center;margin-bottom:28px">
         <video controls playsinline preload="metadata" src="how-to-buy.mp4#t=0.1" style="width:100%;max-width:340px;border-radius:20px;background:var(--brand);aspect-ratio:9/16" aria-label="How to buy"></video>
       </div>
       <ol class="steps">
@@ -427,7 +427,11 @@ var T = {
 
 var state = { lang: "am", pack: 2, pay: "telebirr", order: null };
 function $(id) { return document.getElementById(id); }
-function t(k) { return T[state.lang][k] || T.en[k] || k; }
+function t(k) {
+  var o = CONFIG.texts && CONFIG.texts[state.lang];
+  if (o && typeof o[k] === "string" && o[k] !== "") return o[k];
+  return T[state.lang][k] || T.en[k] || k;
+}
 function fmt(n) { return n.toLocaleString("en-US"); }
 function etb(n) { return fmt(n) + (state.lang === "am" ? " ብር" : " ETB"); }
 function fill(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
@@ -448,6 +452,7 @@ function applyNotice() {
   var text = closed ? t("closed") : ((CONFIG.notice && (CONFIG.notice[state.lang] || CONFIG.notice.en || CONFIG.notice.am)) || "");
   el.textContent = text; el.hidden = !text; el.className = "notice" + (closed ? " closed" : "");
   $("submit-btn").disabled = closed;
+  var vw = $("video-wrap"); if (vw) vw.hidden = CONFIG.video === false;
 }
 
 function renderRates() {

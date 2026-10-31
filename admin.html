@@ -44,6 +44,16 @@ p { margin: 0; }
 .msg.bad { background: color-mix(in srgb, var(--bad) 16%, var(--surface)); }
 .bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); display: flex; gap: 10px; justify-content: center; }
 .bar .btn { flex: 1; max-width: 340px; }
+textarea.input { min-height: 74px; resize: vertical; line-height: 1.4; }
+details.sec { border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+details.sec > summary { cursor: pointer; font-weight: 700; padding: 14px 16px; list-style: none; display: flex; justify-content: space-between; }
+details.sec > summary::after { content: "+"; }
+details.sec[open] > summary::after { content: "–"; }
+details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 18px; }
+.tf { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.tf:first-child { border-top: 0; padding-top: 4px; }
+.tf .hint { font-size: .8rem; color: var(--muted); }
+.tf label { font-weight: 600; font-size: .85rem; }
 [hidden] { display: none !important; }
 @media (max-width: 460px) { .row { grid-template-columns: 1fr; } }
 </style>
@@ -84,6 +94,13 @@ p { margin: 0; }
       <button class="btn ghost" id="add-pay" type="button">+ የክፍያ መንገድ ጨምር</button>
     </section>
 
+    <section class="card">
+      <h2>የድረ-ገጽ ጽሑፎች</h2>
+      <p class="muted">እያንዳንዱን ጽሑፍ በአማርኛና በእንግሊዝኛ እዚህ ማስተካከል ይችላሉ። ሳጥኑን ባዶ ካደረጉ ወደ መጀመሪያው ጽሑፍ ይመለሳል። በ{ } ውስጥ ያሉ ቃላትን (ለምሳሌ {amt}) አይቀይሩ።</p>
+      <label class="check"><input type="checkbox" id="show-video"> "እንዴት ይገዛል" ቪዲዮ አሳይ</label>
+      <div id="texts" style="display:flex;flex-direction:column;gap:10px"></div>
+    </section>
+
     <div class="msg" id="save-msg" hidden role="status" style="margin-top:16px"></div>
     <p class="muted" style="margin-top:16px">ትዕዛዞች እዚህ አይታዩም፤ ደንበኞች በቴሌግራም ይልኩልዎታል። ከተቀመጠ በኋላ ድረ-ገጹ በአንድ ደቂቃ ውስጥ ይታደሳል።</p>
   </div>
@@ -99,6 +116,9 @@ p { margin: 0; }
   var API = "https://api.github.com";
   var $ = function (id) { return document.getElementById(id); };
   var token = "", repo = "", sha = "", cfg = null;
+  var DEFAULTS = {"en": {"brand": "Santim Shop", "nav_packs": "Packages", "nav_how": "How it works", "nav_faq": "FAQ", "eyebrow": "Coin top-ups for Ethiopia · Pay in birr", "h1": "Top up TikTok coins. Pay in birr.", "lead": "Choose a pack, send us your TikTok username, pay in birr. We deliver the coins to your account and message you when it is done.", "cta_buy": "Buy coins", "cta_how": "How it works", "f1": "Username only, never a password", "f2": "Local bank and mobile money", "f3": "Support in Amharic and English", "rates": "Today's rates", "rate_note": "Prices in Ethiopian birr (ETB). Rates can change; the price at checkout is final.", "h_packs": "Pick your coin pack", "p_packs": "Bigger packs cost less per coin. Tap a pack to start your order.", "h_details": "Your details", "l_user": "TikTok username", "h_user": "The name after the @ on your profile. We never need your password.", "l_phone": "Phone number for updates", "l_pay": "Pay with", "safe": "Never share your TikTok password or SMS code with anyone, including us. We will not ask for them.", "h_sum": "Order summary", "s_pack": "Pack", "s_user": "Account", "s_pay": "Payment", "s_total": "Total", "btn_order": "Place order", "d_ref": "Order reference", "btn_copy": "Copy message", "btn_tg": "Open Telegram", "btn_new": "New order", "h_how": "From order to coins in four steps", "st1_t": "Choose a pack", "st1_p": "Pick the amount of coins and enter your TikTok username.", "st2_t": "Send payment", "st2_p": "Pay the exact birr amount to our account with your bank or mobile money.", "st3_t": "Send the receipt", "st3_p": "Message us your order reference and a screenshot of the receipt.", "st4_t": "Get your coins", "st4_p": "We deliver to your account and confirm by message.", "h_methods": "Ways to pay", "p_methods": "All payments are in Ethiopian birr.", "h_faq": "Questions", "q1": "How long does delivery take?", "a1": "Most orders are delivered within 30 minutes of a confirmed payment during business hours.", "q2": "What do you need from my account?", "a2": "Only your public TikTok username. We never ask for your password, email login or verification codes.", "q3": "What if I sent the wrong username?", "a3": "Message us right away with your order reference. We can fix it before delivery. After delivery coins cannot be moved.", "q4": "Is this run by TikTok?", "a4": "No. Santim Shop is an independent store. TikTok is a trademark of its owner and is not connected to this site.", "foot1": "Santim Shop is an independent store and is not affiliated with, endorsed by or sponsored by TikTok or ByteDance.", "foot2": "Coins are digital goods. Once delivered, orders cannot be refunded.", "foot3": "Live chat is provided by Tawk.to. Messages you send there are stored by Tawk.to.", "closed": "The shop is closed for now. Please check back later.", "coins": "coins", "popular": "Popular", "best": "Best value", "per": "per coin", "err_user": "Enter a valid username: 2 to 24 letters, numbers, dots or underscores.", "err_phone": "Enter a valid Ethiopian phone number, like 0912345678.", "done_title": "Order placed. Now pay and send your receipt.", "pay_s1": "Pay {amt} to {name}: {acct} ({holder}).", "pay_s2": "Send us the message below on Telegram with a screenshot of your receipt.", "pay_s3": "We deliver {coins} coins to @{user} and confirm by message.", "msg": "Order {ref}\n{coins} coins for @{user}\nTotal {amt}\nPaid with {name}\nPhone {phone}", "copied": "Copied", "copy_fail": "Select the message and copy it"}, "am": {"brand": "ሳንቲም ሱቅ", "nav_packs": "ፓኬጆች", "nav_how": "እንዴት ይሰራል", "nav_faq": "ጥያቄዎች", "eyebrow": "የኮይን መሙያ ለኢትዮጵያ · በብር ይክፈሉ", "h1": "የቲክቶክ ኮይን ይሙሉ። በብር ይክፈሉ።", "lead": "ፓኬጅ ይምረጡ፣ የቲክቶክ ተጠቃሚ ስምዎን ይላኩ፣ በብር ይክፈሉ። ኮይኑን ወደ አካውንትዎ እናደርሳለን፣ ሲጠናቀቅም መልዕክት እንልካለን።", "cta_buy": "ኮይን ግዙ", "cta_how": "እንዴት ይሰራል", "f1": "የተጠቃሚ ስም ብቻ፣ የይለፍ ቃል በጭራሽ", "f2": "የሀገር ውስጥ ባንክና ሞባይል ገንዘብ", "f3": "በአማርኛና በእንግሊዝኛ ድጋፍ", "rates": "የዛሬ ዋጋ", "rate_note": "ዋጋዎች በኢትዮጵያ ብር (ETB) ናቸው። ዋጋ ሊቀየር ይችላል፤ በክፍያ ወቅት የሚታየው ዋጋ የመጨረሻ ነው።", "h_packs": "የኮይን ፓኬጅ ይምረጡ", "p_packs": "ትልቅ ፓኬጅ በአንድ ኮይን ርካሽ ነው። ትዕዛዝ ለመጀመር ፓኬጅ ይንኩ።", "h_details": "የእርስዎ መረጃ", "l_user": "የቲክቶክ ተጠቃሚ ስም", "h_user": "በፕሮፋይልዎ ላይ ከ@ በኋላ ያለው ስም። የይለፍ ቃልዎን በጭራሽ አንጠይቅም።", "l_phone": "ለማሳወቂያ የስልክ ቁጥር", "l_pay": "የመክፈያ መንገድ", "safe": "የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን ለማንም አያጋሩ፤ እኛንም ጨምሮ። አንጠይቅም።", "h_sum": "የትዕዛዝ ማጠቃለያ", "s_pack": "ፓኬጅ", "s_user": "አካውንት", "s_pay": "ክፍያ", "s_total": "ጠቅላላ", "btn_order": "ትዕዛዝ አስገባ", "d_ref": "የትዕዛዝ ቁጥር", "btn_copy": "መልዕክቱን ቅዳ", "btn_tg": "ቴሌግራም ክፈት", "btn_new": "አዲስ ትዕዛዝ", "h_how": "ከትዕዛዝ እስከ ኮይን በአራት ደረጃ", "st1_t": "ፓኬጅ ይምረጡ", "st1_p": "የኮይን መጠን ይምረጡ እና የቲክቶክ ተጠቃሚ ስምዎን ያስገቡ።", "st2_t": "ክፍያ ይላኩ", "st2_p": "ትክክለኛውን የብር መጠን በባንክ ወይም በሞባይል ገንዘብ ወደ አካውንታችን ይላኩ።", "st3_t": "ደረሰኙን ይላኩ", "st3_p": "የትዕዛዝ ቁጥርዎን እና የደረሰኝ ምስል ይላኩልን።", "st4_t": "ኮይንዎን ይቀበሉ", "st4_p": "ወደ አካውንትዎ እናደርሳለን፣ በመልዕክት እናረጋግጣለን።", "h_methods": "የመክፈያ መንገዶች", "p_methods": "ሁሉም ክፍያዎች በኢትዮጵያ ብር ናቸው።", "h_faq": "ጥያቄዎች", "q1": "ማድረስ ምን ያህል ጊዜ ይወስዳል?", "a1": "አብዛኛዎቹ ትዕዛዞች በስራ ሰዓት ክፍያ ከተረጋገጠ በኋላ በ30 ደቂቃ ውስጥ ይደርሳሉ።", "q2": "ከአካውንቴ ምን ያስፈልጋል?", "a2": "የህዝብ የቲክቶክ ተጠቃሚ ስምዎ ብቻ። የይለፍ ቃል፣ የኢሜይል መግቢያ ወይም የማረጋገጫ ኮድ በጭራሽ አንጠይቅም።", "q3": "የተሳሳተ ተጠቃሚ ስም ብልክስ?", "a3": "በትዕዛዝ ቁጥርዎ ወዲያውኑ ያሳውቁን። ከማድረስ በፊት ማስተካከል እንችላለን። ከደረሰ በኋላ ኮይን መመለስ አይቻልም።", "q4": "ይህ በቲክቶክ የሚመራ ነው?", "a4": "አይደለም። ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው። ቲክቶክ የባለቤቱ የንግድ ምልክት ሲሆን ከዚህ ድረ-ገጽ ጋር ግንኙነት የለውም።", "foot1": "ሳንቲም ሱቅ ራሱን የቻለ መደብር ነው፤ ከቲክቶክ ወይም ባይትዳንስ ጋር ግንኙነት፣ ድጋፍ ወይም ስፖንሰርሺፕ የለውም።", "foot2": "ኮይን ዲጂታል ምርት ነው። ከደረሰ በኋላ ገንዘብ አይመለስም።", "foot3": "የቀጥታ ውይይቱ የሚሰራው በTawk.to ነው። እዚያ የሚልኩት መልዕክት በTawk.to ይቀመጣል።", "closed": "ሱቁ ለጊዜው ዝግ ነው። ቆይተው ይመለሱ።", "coins": "ኮይን", "popular": "ተወዳጅ", "best": "ምርጥ ዋጋ", "per": "በአንድ ኮይን", "err_user": "ትክክለኛ ስም ያስገቡ፤ ከ2 እስከ 24 ፊደል፣ ቁጥር፣ ነጥብ ወይም underscore።", "err_phone": "ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ፣ ለምሳሌ 0912345678።", "done_title": "ትዕዛዝዎ ተመዝግቧል። አሁን ይክፈሉ እና ደረሰኝ ይላኩ።", "pay_s1": "{amt} ወደ {name} ይክፈሉ፦ {acct} ({holder})።", "pay_s2": "ከታች ያለውን መልዕክት ከደረሰኝ ምስል ጋር በቴሌግራም ይላኩልን።", "pay_s3": "{coins} ኮይን ወደ @{user} እናደርሳለን፣ በመልዕክት እናረጋግጣለን።", "msg": "ትዕዛዝ {ref}\n{coins} ኮይን ለ @{user}\nጠቅላላ {amt}\nየከፈልኩት በ {name}\nስልክ {phone}", "copied": "ተቀድቷል", "copy_fail": "መልዕክቱን መርጠው ይቅዱ"}};
+  var SECTIONS = [["ከላይኛው ምናሌ", ["brand", "nav_packs", "nav_how", "nav_faq"]], ["የመጀመሪያው ገጽ (ርዕስ)", ["eyebrow", "h1", "lead", "cta_buy", "cta_how", "f1", "f2", "f3", "rates", "rate_note"]], ["የፓኬጅ ክፍል", ["h_packs", "p_packs", "coins", "popular", "best", "per"]], ["የትዕዛዝ ቅጽ", ["h_details", "l_user", "h_user", "l_phone", "l_pay", "safe", "h_sum", "s_pack", "s_user", "s_pay", "s_total", "btn_order", "closed"]], ["የስህተት መልዕክቶች", ["err_user", "err_phone"]], ["ትዕዛዝ ከተገባ በኋላ", ["d_ref", "done_title", "pay_s1", "pay_s2", "pay_s3", "msg", "btn_copy", "btn_tg", "btn_new", "copied", "copy_fail"]], ["የአራት ደረጃ ክፍል", ["h_how", "st1_t", "st1_p", "st2_t", "st2_p", "st3_t", "st3_p", "st4_t", "st4_p"]], ["የመክፈያ መንገዶች ክፍል", ["h_methods", "p_methods"]], ["ጥያቄዎችና መልሶች", ["h_faq", "q1", "a1", "q2", "a2", "q3", "a3", "q4", "a4"]], ["የገጹ ግርጌ", ["foot1", "foot2", "foot3"]]];
+  var textInputs = {};
 
   function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
   function load(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
@@ -166,6 +186,29 @@ p { margin: 0; }
     return row;
   }
 
+  function renderTexts() {
+    var box = $("texts"); box.innerHTML = ""; textInputs = {};
+    var ov = cfg.texts || {};
+    SECTIONS.forEach(function (sec) {
+      var d = h("details", { "class": "sec" }, [h("summary", { text: sec[0] })]);
+      var inner = h("div", { "class": "inner" });
+      sec[1].forEach(function (k) {
+        var def = DEFAULTS.en[k] || "", ph = def.indexOf("{") >= 0;
+        var am = h("textarea", { "class": "input", rows: "2" }), en = h("textarea", { "class": "input", rows: "2" });
+        am.value = (ov.am && ov.am[k]) || DEFAULTS.am[k] || ""; en.value = (ov.en && ov.en[k]) || def;
+        textInputs[k] = { am: am, en: en };
+        var f = h("div", { "class": "tf" }, [
+          h("span", { "class": "hint", text: def.length > 70 ? def.slice(0, 70) + "…" : def }),
+          h("label", { text: "አማርኛ" }), am, h("label", { text: "English" }), en
+        ]);
+        if (ph) f.insertBefore(h("span", { "class": "hint", text: "{ } ውስጥ ያሉትን ቃላት አይቀይሩ" }), f.children[1]);
+        inner.appendChild(f);
+      });
+      d.appendChild(inner); box.appendChild(d);
+    });
+    $("show-video").checked = cfg.video !== false;
+  }
+
   function render() {
     $("open").checked = cfg.open !== false;
     $("notice-am").value = (cfg.notice && cfg.notice.am) || "";
@@ -173,6 +216,7 @@ p { margin: 0; }
     $("telegram").value = cfg.telegram || "";
     $("packs").innerHTML = ""; (cfg.packs || []).forEach(function (p) { $("packs").appendChild(packRow(p)); });
     $("pays").innerHTML = ""; (cfg.payments || []).forEach(function (p) { $("pays").appendChild(payRow(p)); });
+    renderTexts();
   }
 
   function collect() {
@@ -184,7 +228,14 @@ p { margin: 0; }
     if (!pays.length) throw new Error("ቢያንስ አንድ የክፍያ መንገድ ያስፈልጋል።");
     var tg = $("telegram").value.trim().replace(/^@+/, "");
     if (!/^[A-Za-z0-9_]{4,32}$/.test(tg)) throw new Error("የቴሌግራም ስም ከ4 እስከ 32 ፊደል፣ ቁጥር ወይም _ መሆን አለበት።");
-    return { open: $("open").checked, notice: { am: $("notice-am").value.trim(), en: $("notice-en").value.trim() }, telegram: tg, packs: packs, payments: pays };
+    var texts = { am: {}, en: {} };
+    Object.keys(textInputs).forEach(function (k) {
+      ["am", "en"].forEach(function (l) {
+        var v = textInputs[k][l].value.trim();
+        if (v && v !== (DEFAULTS[l][k] || "").trim()) texts[l][k] = v;
+      });
+    });
+    return { open: $("open").checked, video: $("show-video").checked, texts: texts, notice: { am: $("notice-am").value.trim(), en: $("notice-en").value.trim() }, telegram: tg, packs: packs, payments: pays };
   }
 
   function connect() {
