@@ -285,10 +285,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
   <section id="how">
     <div class="wrap">
       <div class="head"><h2 data-i18n="h_how">From order to coins in four steps</h2></div>
-      <div id="video-wrap" style="display:flex;justify-content:center;margin-bottom:28px">
-        <video controls playsinline preload="metadata" src="how-to-buy.mp4#t=0.1" style="width:100%;max-width:340px;border-radius:20px;background:var(--brand);aspect-ratio:9/16" aria-label="How to buy"></video>
-      </div>
-      <ol class="steps">
+            <ol class="steps">
         <li><h3 data-i18n="st1_t">Choose a pack</h3><p data-i18n="st1_p">Pick the amount of coins and enter your TikTok username.</p></li>
         <li><h3 data-i18n="st2_t">Send payment</h3><p data-i18n="st2_p">Pay the exact birr amount to our account with your bank or mobile money.</p></li>
         <li><h3 data-i18n="st3_t">Send the receipt</h3><p data-i18n="st3_p">Message us your order reference and a screenshot of the receipt.</p></li>
@@ -452,7 +449,6 @@ function applyNotice() {
   var text = closed ? t("closed") : ((CONFIG.notice && (CONFIG.notice[state.lang] || CONFIG.notice.en || CONFIG.notice.am)) || "");
   el.textContent = text; el.hidden = !text; el.className = "notice" + (closed ? " closed" : "");
   $("submit-btn").disabled = closed;
-  var vw = $("video-wrap"); if (vw) vw.hidden = CONFIG.video === false;
 }
 
 function renderRates() {
