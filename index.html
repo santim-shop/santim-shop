@@ -362,7 +362,7 @@ var T = {
     closed:"The shop is closed for now. Please check back later.", coins:"coins", popular:"Popular", best:"Best value", per:"per coin",
     err_user:"Enter a valid username: 2 to 24 letters, numbers, dots or underscores.",
     err_phone:"Enter a valid Ethiopian phone number, like 0912345678.",
-    done_title:"Order placed. Now pay and send your receipt.",
+    done_title:"Order placed. Message us on Telegram to get the payment account.",
     pay_s1:"Send us the message below on Telegram.",
     pay_s2:"We reply with the account to pay, in birr.",
     pay_s3:"Pay, send the receipt, and we deliver {coins} coins to @{user}.",
@@ -381,14 +381,13 @@ var T = {
     h_details:"የእርስዎ መረጃ", l_user:"የቲክቶክ ተጠቃሚ ስም", h_user:"በፕሮፋይልዎ ላይ ከ@ በኋላ ያለው ስም። የይለፍ ቃልዎን በጭራሽ አንጠይቅም።",
     l_phone:"ለማሳወቂያ የስልክ ቁጥር",
     safe:"የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን ለማንም አያጋሩ፤ እኛንም ጨምሮ። አንጠይቅም።",
-    h_sum:"የትዕዛዝ ማጠቃለያ", s_pack:"ፓኬጅ", s_user:"አካውንት", s_pay:"ክፍያ", s_total:"ጠቅላላ", btn_order:"ትዕዛዝ አስገባ",
+    h_sum:"የትዕዛዝ ማጠቃለያ", s_pack:"ፓኬጅ", s_user:"አካውንት", s_total:"ጠቅላላ", btn_order:"ትዕዛዝ አስገባ",
     d_ref:"የትዕዛዝ ቁጥር", btn_copy:"መልዕክቱን ቅዳ", btn_tg:"ቴሌግራም ክፈት", btn_new:"አዲስ ትዕዛዝ",
     h_how:"ከትዕዛዝ እስከ ኮይን በአራት ደረጃ",
     st1_t:"ፓኬጅ ይምረጡ", st1_p:"የኮይን መጠን ይምረጡ እና የቲክቶክ ተጠቃሚ ስምዎን ያስገቡ።",
     st2_t:"ክፍያ ይላኩ", st2_p:"ትክክለኛውን የብር መጠን በባንክ ወይም በሞባይል ገንዘብ ወደ አካውንታችን ይላኩ።",
     st3_t:"ደረሰኙን ይላኩ", st3_p:"የትዕዛዝ ቁጥርዎን እና የደረሰኝ ምስል ይላኩልን።",
     st4_t:"ኮይንዎን ይቀበሉ", st4_p:"ወደ አካውንትዎ እናደርሳለን፣ በመልዕክት እናረጋግጣለን።",
-    h_methods:"የመክፈያ መንገዶች", p_methods:"ሁሉም ክፍያዎች በኢትዮጵያ ብር ናቸው።",
     h_faq:"ጥያቄዎች",
     q1:"ማድረስ ምን ያህል ጊዜ ይወስዳል?", a1:"አብዛኛዎቹ ትዕዛዞች በስራ ሰዓት ክፍያ ከተረጋገጠ በኋላ በ30 ደቂቃ ውስጥ ይደርሳሉ።",
     q2:"ከአካውንቴ ምን ያስፈልጋል?", a2:"የህዝብ የቲክቶክ ተጠቃሚ ስምዎ ብቻ። የይለፍ ቃል፣ የኢሜይል መግቢያ ወይም የማረጋገጫ ኮድ በጭራሽ አንጠይቅም።",
@@ -400,16 +399,16 @@ var T = {
     closed:"ሱቁ ለጊዜው ዝግ ነው። ቆይተው ይመለሱ።", coins:"ኮይን", popular:"ተወዳጅ", best:"ምርጥ ዋጋ", per:"በአንድ ኮይን",
     err_user:"ትክክለኛ ስም ያስገቡ፤ ከ2 እስከ 24 ፊደል፣ ቁጥር፣ ነጥብ ወይም underscore።",
     err_phone:"ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ፣ ለምሳሌ 0912345678።",
-    done_title:"ትዕዛዝዎ ተመዝግቧል። አሁን ይክፈሉ እና ደረሰኝ ይላኩ።",
-    pay_s1:"{amt} ወደ {name} ይክፈሉ፦ {acct} ({holder})።",
-    pay_s2:"ከታች ያለውን መልዕክት ከደረሰኝ ምስል ጋር በቴሌግራም ይላኩልን።",
-    pay_s3:"{coins} ኮይን ወደ @{user} እናደርሳለን፣ በመልዕክት እናረጋግጣለን።",
-    msg:"ትዕዛዝ {ref}\n{coins} ኮይን ለ @{user}\nጠቅላላ {amt}\nየከፈልኩት በ {name}\nስልክ {phone}",
+    done_title:"ትዕዛዝዎ ተመዝግቧል። የክፍያ አካውንት ለማግኘት በቴሌግራም ያናግሩን።",
+    pay_s1:"ከታች ያለውን መልዕክት በቴሌግራም ይላኩልን።",
+    pay_s2:"የክፍያ አካውንቱን በብር እንልክልዎታለን።",
+    pay_s3:"ከከፈሉ በኋላ ደረሰኙን ይላኩ፤ {coins} ኮይን ወደ @{user} እናደርሳለን።",
+    msg:"ትዕዛዝ {ref}\n{coins} ኮይን ለ @{user}\nጠቅላላ {amt}\nስልክ {phone}",
     copied:"ተቀድቷል", copy_fail:"መልዕክቱን መርጠው ይቅዱ"
   }
 };
 
-var state = { lang: "am", pack: 2, pay: "telebirr", order: null };
+var state = { lang: "am", pack: 2, order: null };
 function $(id) { return document.getElementById(id); }
 function t(k) {
   var o = CONFIG.texts && CONFIG.texts[state.lang];
@@ -419,15 +418,13 @@ function t(k) {
 function fmt(n) { return n.toLocaleString("en-US"); }
 function etb(n) { return fmt(n) + (state.lang === "am" ? " ብር" : " ETB"); }
 function fill(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
-function payById(id) { return CONFIG.payments.filter(function (p) { return p.id === id; })[0]; }
-
 function renderStatic() {
   document.documentElement.lang = state.lang === "am" ? "am" : "en";
   var els = document.querySelectorAll("[data-i18n]");
   for (var i = 0; i < els.length; i++) els[i].textContent = t(els[i].getAttribute("data-i18n"));
   var btns = document.querySelectorAll(".lang button");
   for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].dataset.lang === state.lang));
-  renderRates(); renderPacks(); renderPay(); renderMethods(); renderSummary(); applyNotice();
+  renderRates(); renderPacks(); renderSummary(); applyNotice();
   if (state.order) renderDone();
 }
 
@@ -440,7 +437,8 @@ function applyNotice() {
 
 function renderRates() {
   var ul = $("rate-list"); ul.innerHTML = "";
-  [1, 2, 4].forEach(function (i) {
+  var n = CONFIG.packs.length, idx = n <= 3 ? CONFIG.packs.map(function (_, i) { return i; }) : [0, Math.floor(n / 2), n - 1];
+  idx.forEach(function (i) {
     var p = CONFIG.packs[i], li = document.createElement("li");
     li.innerHTML = '<span class="coins">' + fmt(p.coins) + ' <small style="font-size:.8rem;font-weight:500;opacity:.8">' + t("coins") + '</small></span><span class="price">' + etb(p.price) + '</span>';
     ul.appendChild(li);
@@ -461,31 +459,11 @@ function renderPacks() {
   });
 }
 
-function renderPay() {
-  var g = $("pay-grid"); g.innerHTML = "";
-  CONFIG.payments.forEach(function (p) {
-    var b = document.createElement("button");
-    b.type = "button"; b.textContent = p.name; b.setAttribute("aria-pressed", String(p.id === state.pay));
-    b.addEventListener("click", function () { state.pay = p.id; renderPay(); renderSummary(); });
-    g.appendChild(b);
-  });
-}
-
-function renderMethods() {
-  var g = $("methods-grid"); g.innerHTML = "";
-  CONFIG.payments.forEach(function (p) {
-    var d = document.createElement("div"); d.className = "method";
-    d.innerHTML = '<b></b><span></span>'; d.firstChild.textContent = p.name; d.lastChild.textContent = state.lang === "am" ? "ብር" : "ETB";
-    g.appendChild(d);
-  });
-}
-
 function cleanUser() { return $("username").value.trim().replace(/^@+/, ""); }
 function renderSummary() {
   var p = CONFIG.packs[state.pack];
   $("s-pack").textContent = fmt(p.coins) + " " + t("coins");
   $("s-user").textContent = "@" + (cleanUser() || "…");
-  $("s-pay").textContent = payById(state.pay).name;
   $("s-total").textContent = etb(p.price);
 }
 
@@ -506,8 +484,8 @@ function newRef() {
 }
 
 function renderDone() {
-  var o = state.order, p = payById(o.pay), amt = etb(o.price);
-  var vars = { amt: amt, name: p.name, acct: p.account, holder: p.holder, coins: fmt(o.coins), user: o.user, ref: o.ref, phone: o.phone };
+  var o = state.order, amt = etb(o.price);
+  var vars = { amt: amt, coins: fmt(o.coins), user: o.user, ref: o.ref, phone: o.phone };
   $("d-ref").textContent = o.ref;
   $("d-title").textContent = t("done_title");
   $("d-steps").innerHTML = "";
@@ -528,7 +506,7 @@ $("order-form").addEventListener("submit", function (e) {
   e.preventDefault();
   if (!validate()) return;
   var p = CONFIG.packs[state.pack];
-  state.order = { ref: newRef(), coins: p.coins, price: p.price, user: cleanUser(), phone: $("phone").value.trim(), pay: state.pay };
+  state.order = { ref: newRef(), coins: p.coins, price: p.price, user: cleanUser(), phone: $("phone").value.trim() };
   renderDone();
   $("order-form").hidden = true; $("done").hidden = false;
   $("done").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -556,10 +534,9 @@ for (var i = 0; i < lb.length; i++) lb[i].addEventListener("click", function (e)
 fetch("config.json", { cache: "no-store" })
   .then(function (r) { return r.ok ? r.json() : null; })
   .then(function (c) {
-    if (c && c.packs && c.payments) {
+    if (c && c.packs) {
       CONFIG = c;
       if (state.pack >= CONFIG.packs.length) state.pack = 0;
-      if (!payById(state.pay)) state.pay = CONFIG.payments[0].id;
     }
   })
   .catch(function () {})

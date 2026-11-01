@@ -1,51 +1,24 @@
 {
   "open": true,
-  "video": false,
-  "texts": {
-    "am": {
-      "h_user": "የTiktok login እና password በ telegram ይላኩ",
-      "safe": "የቲክቶክ ይለፍ ቃልዎን ወይም የኤስኤምኤስ ኮድዎን በ telegram ይላኩልን"
-    },
-    "en": {
-      "h_user": "The name of your TikTok login and password",
-      "safe": "TikTok password or SMS code with anyone, including send by telegram"
-    }
-  },
   "notice": {
     "am": "",
     "en": ""
   },
-  "telegram": "your_telegram_username",
+  "telegram": "santimshope",
   "packs": [
     {
-      "coins": 1000,
-      "price": 2600
-    }
-  ],
-  "payments": [
-    {
-      "id": "telebirr",
-      "name": "Telebirr",
-      "account": "09XX XXX XXX",
-      "holder": "Account holder name"
+      "coins": 5000,
+      "price": 0
     },
     {
-      "id": "cbe",
-      "name": "CBE Birr",
-      "account": "1000XXXXXXXXX",
-      "holder": "Account holder name"
+      "coins": 10000,
+      "price": 0,
+      "tag": "popular"
     },
     {
-      "id": "awash",
-      "name": "Awash Bank",
-      "account": "01320XXXXXXXX",
-      "holder": "Account holder name"
-    },
-    {
-      "id": "dashen",
-      "name": "Dashen Bank",
-      "account": "0XXXXXXXXXXXX",
-      "holder": "Account holder name"
+      "coins": 20000,
+      "price": 0,
+      "tag": "best"
     }
   ]
 }
