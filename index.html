@@ -169,6 +169,23 @@ summary::after { content: "+"; font-family: var(--font-mono); font-size: 1.2rem;
 details[open] summary::after { content: "–"; }
 details p { color: var(--muted); padding-bottom: 16px; }
 
+/* reviews */
+.rev-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.rev-avg { display: flex; align-items: baseline; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; }
+.rev-avg-n { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; }
+.rev-stars { color: var(--gold); letter-spacing: 1px; }
+.rev-avg-count { color: var(--muted); font-size: 0.85rem; }
+.rev-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; margin-bottom: 28px; }
+.rev-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.rev-card .stars { color: var(--gold); letter-spacing: 1px; font-size: 1.1rem; }
+.rev-card p { color: var(--fg); font-size: 0.95rem; overflow-wrap: anywhere; }
+.rev-card .who { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+.rev-empty { color: var(--muted); margin-bottom: 28px; }
+.rev-form { max-width: 560px; }
+.star-pick { display: flex; gap: 6px; }
+.star-btn { font-size: 2.2rem; line-height: 1; background: none; border: 0; color: var(--line); cursor: pointer; padding: 4px; min-width: 44px; min-height: 44px; }
+.star-btn.on, .star-btn:hover, .star-btn:focus-visible { color: var(--gold); }
+
 footer { border-top: 1px solid var(--line); padding-block: 32px 40px; color: var(--muted); font-size: 0.88rem; }
 footer .wrap { display: flex; flex-direction: column; gap: 10px; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; z-index: 40; }
@@ -289,6 +306,59 @@ footer .wrap { display: flex; flex-direction: column; gap: 10px; }
     </div>
   </section>
 
+  <section id="reviews">
+    <div class="wrap">
+      <div class="head rev-head">
+        <div>
+          <h2 data-i18n="h_rev">What customers say</h2>
+          <p data-i18n="p_rev">Real feedback from people who ordered.</p>
+        </div>
+        <div class="rev-avg" id="rev-avg" hidden>
+          <span class="rev-avg-n" id="rev-avg-n"></span>
+          <span class="rev-stars" id="rev-avg-stars" aria-hidden="true"></span>
+          <span class="rev-avg-count" id="rev-avg-count"></span>
+        </div>
+      </div>
+      <div class="rev-list" id="rev-list"></div>
+      <p class="rev-empty" id="rev-empty" hidden data-i18n="rev_empty">No reviews yet. Be the first to leave one.</p>
+
+      <div class="panel rev-form" id="rev-form-panel">
+        <h3 data-i18n="h_rev_form">Leave a rating</h3>
+        <div class="field">
+          <span class="lbl" data-i18n="rev_stars_label">Your rating</span>
+          <div class="star-pick" id="star-pick" role="radiogroup" aria-label="Rating">
+            <button type="button" class="star-btn" data-v="1" role="radio" aria-checked="false" aria-label="1">★</button>
+            <button type="button" class="star-btn" data-v="2" role="radio" aria-checked="false" aria-label="2">★</button>
+            <button type="button" class="star-btn" data-v="3" role="radio" aria-checked="false" aria-label="3">★</button>
+            <button type="button" class="star-btn" data-v="4" role="radio" aria-checked="false" aria-label="4">★</button>
+            <button type="button" class="star-btn" data-v="5" role="radio" aria-checked="false" aria-label="5">★</button>
+          </div>
+          <span class="err" id="err-stars" role="alert"></span>
+        </div>
+        <div class="field">
+          <label for="rev-name" data-i18n="rev_name_label">Your name (optional)</label>
+          <input class="input" id="rev-name" autocomplete="off" maxlength="40">
+        </div>
+        <div class="field">
+          <label for="rev-text" data-i18n="rev_text_label">Your feedback</label>
+          <textarea class="input" id="rev-text" rows="3" maxlength="400"></textarea>
+          <span class="err" id="err-rev" role="alert"></span>
+        </div>
+        <button class="btn gold" type="button" id="rev-submit" data-i18n="btn_rev_send">Prepare review</button>
+      </div>
+
+      <div class="panel done" id="rev-done" hidden aria-live="polite">
+        <h3 data-i18n="rev_done_title">Thank you. Send this to publish your review.</h3>
+        <div class="msgbox" id="rev-msg"></div>
+        <div class="cta-row">
+          <button class="btn" type="button" id="rev-copy-btn" data-i18n="btn_copy">Copy message</button>
+          <a class="btn ghost" id="rev-tg-link" href="#" target="_blank" rel="noopener" data-i18n="btn_tg">Open Telegram</a>
+          <button class="btn ghost" type="button" id="rev-new-btn" data-i18n="btn_rev_new">Leave another</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="faq">
     <div class="wrap">
       <div class="head"><h2 data-i18n="h_faq">Questions</h2></div>
@@ -350,6 +420,12 @@ var T = {
     st2_t:"Send payment", st2_p:"Pay the exact birr amount to our account with your bank or mobile money.",
     st3_t:"Send the receipt", st3_p:"Message us your order reference and a screenshot of the receipt.",
     st4_t:"Get your coins", st4_p:"We deliver to your account and confirm by message.",
+    h_rev:"What customers say", p_rev:"Real feedback from people who ordered.", rev_empty:"No reviews yet. Be the first to leave one.",
+    h_rev_form:"Leave a rating", rev_stars_label:"Your rating", rev_name_label:"Your name (optional)", rev_text_label:"Your feedback",
+    btn_rev_send:"Prepare review", btn_rev_new:"Leave another", rev_done_title:"Thank you. Send this to publish your review.",
+    err_stars:"Pick a star rating.", err_rev:"Write a short feedback message.",
+    rev_msg:"Review for Santim Shop\nRating: {stars}/5\nName: {name}\n{text}",
+    rev_anon:"Anonymous",
     h_faq:"Questions",
     q1:"How long does delivery take?", a1:"Most orders are delivered within 30 minutes of a confirmed payment during business hours.",
     q3:"What if I sent the wrong username?", a3:"Message us right away with your order reference. We can fix it before delivery. After delivery coins cannot be moved.",
@@ -386,6 +462,12 @@ var T = {
     st2_t:"ክፍያ ይላኩ", st2_p:"ትክክለኛውን የብር መጠን በባንክ ወይም በሞባይል ገንዘብ ወደ አካውንታችን ይላኩ።",
     st3_t:"ደረሰኙን ይላኩ", st3_p:"የትዕዛዝ ቁጥርዎን እና የደረሰኝ ምስል ይላኩልን።",
     st4_t:"ኮይንዎን ይቀበሉ", st4_p:"ወደ አካውንትዎ እናደርሳለን፣ በመልዕክት እናረጋግጣለን።",
+    h_rev:"ደንበኞቻችን ምን አሉ", p_rev:"ትዕዛዝ ካስገቡ ደንበኞች የተገኘ እውነተኛ አስተያየት።", rev_empty:"እስካሁን ግምገማ የለም። የመጀመሪያ ይሁኑ።",
+    h_rev_form:"ግምገማ ይስጡን", rev_stars_label:"ደረጃዎ", rev_name_label:"ስምዎ (አማራጭ)", rev_text_label:"አስተያየትዎ",
+    btn_rev_send:"ግምገማ አዘጋጅ", btn_rev_new:"ሌላ ግምገማ ጨምር", rev_done_title:"አመሰግናለሁ። ግምገማዎን ለማሳተም ይህን ይላኩ።",
+    err_stars:"የኮከብ ደረጃ ይምረጡ።", err_rev:"አጭር አስተያየት ይጻፉ።",
+    rev_msg:"ለሳንቲም ሱቅ ግምገማ\nደረጃ: {stars}/5\nስም: {name}\n{text}",
+    rev_anon:"ስም ያልገለጸ",
     h_faq:"ጥያቄዎች",
     q1:"ማድረስ ምን ያህል ጊዜ ይወስዳል?", a1:"አብዛኛዎቹ ትዕዛዞች በስራ ሰዓት ክፍያ ከተረጋገጠ በኋላ በ30 ደቂቃ ውስጥ ይደርሳሉ።",
     q3:"የተሳሳተ ተጠቃሚ ስም ብልክስ?", a3:"በትዕዛዝ ቁጥርዎ ወዲያውኑ ያሳውቁን። ከማድረስ በፊት ማስተካከል እንችላለን። ከደረሰ በኋላ ኮይን መመለስ አይቻልም።",
@@ -405,7 +487,7 @@ var T = {
   }
 };
 
-var state = { lang: "am", pack: 2, order: null };
+var state = { lang: "am", pack: 2, order: null, review: null, reviewStars: 0 };
 function $(id) { return document.getElementById(id); }
 function t(k) {
   var o = CONFIG.texts && CONFIG.texts[state.lang];
@@ -421,8 +503,33 @@ function renderStatic() {
   for (var i = 0; i < els.length; i++) els[i].textContent = t(els[i].getAttribute("data-i18n"));
   var btns = document.querySelectorAll(".lang button");
   for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].dataset.lang === state.lang));
-  renderRates(); renderPacks(); renderSummary(); applyNotice();
+  renderRates(); renderPacks(); renderSummary(); applyNotice(); renderReviews();
   if (state.order) renderDone();
+  if (state.review) renderReviewDone();
+}
+
+function stars(n) { return "★★★★★☆☆☆☆☆".slice(5 - n, 10 - n); }
+
+function renderReviews() {
+  var list = CONFIG.reviews || [];
+  var box = $("rev-list"); box.innerHTML = "";
+  $("rev-empty").hidden = list.length > 0;
+  list.forEach(function (r) {
+    var card = document.createElement("div"); card.className = "rev-card";
+    var who = r.name && r.name.trim() ? r.name.trim() : t("rev_anon");
+    card.innerHTML = '<span class="stars" aria-hidden="true">' + stars(r.stars) + '</span><p></p><span class="who"></span>';
+    card.querySelector("p").textContent = r.text || "";
+    card.querySelector(".who").textContent = who;
+    box.appendChild(card);
+  });
+  var avgEl = $("rev-avg");
+  if (list.length) {
+    var avg = list.reduce(function (s, r) { return s + (r.stars || 0); }, 0) / list.length;
+    $("rev-avg-n").textContent = avg.toFixed(1);
+    $("rev-avg-stars").textContent = stars(Math.round(avg));
+    $("rev-avg-count").textContent = "(" + list.length + ")";
+    avgEl.hidden = false;
+  } else { avgEl.hidden = true; }
 }
 
 function applyNotice() {
@@ -525,6 +632,54 @@ $("new-btn").addEventListener("click", function () {
 });
 
 $("username").addEventListener("input", renderSummary);
+
+var starBtns = document.querySelectorAll("#star-pick .star-btn");
+for (var si = 0; si < starBtns.length; si++) {
+  starBtns[si].addEventListener("click", function (e) {
+    state.reviewStars = Number(e.currentTarget.dataset.v);
+    starBtns.forEach(function (b) { var on = Number(b.dataset.v) <= state.reviewStars; b.classList.toggle("on", on); b.setAttribute("aria-checked", String(Number(b.dataset.v) === state.reviewStars)); });
+    $("err-stars").textContent = "";
+  });
+}
+
+function renderReviewDone() {
+  var r = state.review;
+  var vars = { stars: r.stars, name: r.name || t("rev_anon"), text: r.text };
+  $("rev-msg").textContent = fill(t("rev_msg"), vars);
+  $("rev-tg-link").href = "https://t.me/" + CONFIG.telegram;
+}
+
+$("rev-submit").addEventListener("click", function () {
+  var text = $("rev-text").value.trim();
+  var ok = true;
+  $("err-stars").textContent = state.reviewStars ? "" : t("err_stars");
+  $("err-rev").textContent = text ? "" : t("err_rev");
+  if (!state.reviewStars) { ok = false; }
+  if (!text) { ok = false; if (state.reviewStars) $("rev-text").focus(); }
+  if (!ok) return;
+  state.review = { stars: state.reviewStars, name: $("rev-name").value.trim(), text: text };
+  renderReviewDone();
+  $("rev-form-panel").hidden = true; $("rev-done").hidden = false;
+  $("rev-done").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+$("rev-copy-btn").addEventListener("click", function () {
+  var text = $("rev-msg").textContent;
+  function fallback() {
+    var r = document.createRange(); r.selectNodeContents($("rev-msg"));
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast(t("copy_fail"));
+  }
+  try { navigator.clipboard.writeText(text).then(function () { toast(t("copied")); }, fallback); } catch (err) { fallback(); }
+});
+
+$("rev-new-btn").addEventListener("click", function () {
+  state.review = null; state.reviewStars = 0;
+  $("rev-done").hidden = true; $("rev-form-panel").hidden = false;
+  $("rev-name").value = ""; $("rev-text").value = "";
+  starBtns.forEach(function (b) { b.classList.remove("on"); b.setAttribute("aria-checked", "false"); });
+  $("rev-form-panel").scrollIntoView({ behavior: "smooth" });
+});
+
 var lb = document.querySelectorAll(".lang button");
 for (var i = 0; i < lb.length; i++) lb[i].addEventListener("click", function (e) { state.lang = e.currentTarget.dataset.lang; renderStatic(); });
 

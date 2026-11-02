@@ -89,6 +89,13 @@ details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column
     </section>
 
     <section class="card">
+      <h2>ግምገማዎች</h2>
+      <p class="muted">ደንበኞች በቴሌግራም የላኩልዎትን ግምገማ እዚህ ጨምረው በገጹ ላይ ያሳዩ። ደንበኛው ራሱ በገጹ ላይ መጻፍ አይችልም፤ ያ መልዕክት ወደ እርስዎ ቴሌግራም ይላካል።</p>
+      <div id="reviews" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button class="btn ghost" id="add-review" type="button">+ ግምገማ ጨምር</button>
+    </section>
+
+    <section class="card">
       <h2>የድረ-ገጽ ጽሑፎች</h2>
       <p class="muted">እያንዳንዱን ጽሑፍ በአማርኛና በእንግሊዝኛ እዚህ ማስተካከል ይችላሉ። ሳጥኑን ባዶ ካደረጉ ወደ መጀመሪያው ጽሑፍ ይመለሳል። በ{ } ውስጥ ያሉ ቃላትን (ለምሳሌ {amt}) አይቀይሩ።</p>
       <div id="texts" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -167,6 +174,21 @@ details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column
     del.addEventListener("click", function () { row.remove(); });
     return row;
   }
+  function reviewRow(r) {
+    var stars = h("select", {}, [1, 2, 3, 4, 5].map(function (n) { return h("option", { value: n, text: n + " ★" }); }));
+    stars.value = r.stars || 5;
+    var name = inp(r.name, "text", "ስም (አማራጭ)");
+    var text = h("textarea", { "class": "input", rows: "2" }); text.value = r.text || "";
+    var del = h("button", { "class": "btn danger", type: "button", text: "አጥፋ" });
+    var row = h("div", { "class": "row" }, [
+      field("ደረጃ", stars), field("ስም", name),
+      field("አስተያየት", text, "full"), h("div", { "class": "actions" }, [del])
+    ]);
+    row._get = function () { return { stars: Number(stars.value), name: name.value.trim(), text: text.value.trim() }; };
+    del.addEventListener("click", function () { row.remove(); });
+    return row;
+  }
+
   function renderTexts() {
     var box = $("texts"); box.innerHTML = ""; textInputs = {};
     var ov = cfg.texts || {};
@@ -195,6 +217,7 @@ details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column
     $("notice-en").value = (cfg.notice && cfg.notice.en) || "";
     $("telegram").value = cfg.telegram || "";
     $("packs").innerHTML = ""; (cfg.packs || []).forEach(function (p) { $("packs").appendChild(packRow(p)); });
+    $("reviews").innerHTML = ""; (cfg.reviews || []).forEach(function (r) { $("reviews").appendChild(reviewRow(r)); });
     renderTexts();
   }
 
@@ -204,6 +227,8 @@ details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column
     if (!packs.length) throw new Error("ቢያንስ አንድ ፓኬጅ ያስፈልጋል።");
     var tg = $("telegram").value.trim().replace(/^@+/, "");
     if (!/^[A-Za-z0-9_]{4,32}$/.test(tg)) throw new Error("የቴሌግራም ስም ከ4 እስከ 32 ፊደል፣ ቁጥር ወይም _ መሆን አለበት።");
+    var reviews = [].map.call($("reviews").children, function (r) { return r._get(); });
+    for (var k = 0; k < reviews.length; k++) if (!reviews[k].text) throw new Error("ግምገማ " + (k + 1) + ": አስተያየት ባዶ መሆን የለበትም።");
     var texts = { am: {}, en: {} };
     Object.keys(textInputs).forEach(function (k) {
       ["am", "en"].forEach(function (l) {
@@ -211,7 +236,7 @@ details.sec .inner { padding: 0 14px 14px; display: flex; flex-direction: column
         if (v && v !== (DEFAULTS[l][k] || "").trim()) texts[l][k] = v;
       });
     });
-    return { open: $("open").checked, texts: texts, notice: { am: $("notice-am").value.trim(), en: $("notice-en").value.trim() }, telegram: tg, packs: packs };
+    return { open: $("open").checked, texts: texts, notice: { am: $("notice-am").value.trim(), en: $("notice-en").value.trim() }, telegram: tg, packs: packs, reviews: reviews };
   }
 
   function connect() {
